@@ -1,0 +1,1922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pratique du Français</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #f2ede3;
+    --page:    #faf7f0;
+    --card:    #faf7f0;
+    --border:  #d4cfc4;
+    --border2: #c4bfb4;
+    --ink:     #1a1a1a;
+    --red:     #b8221a;
+    --green:   #1a5e32;
+    --muted:   #9a9488;
+    --warm:    #7a6f5e;
+    --stripe:  #f4f0e8;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Mono', monospace;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ── NAV ── */
+  nav {
+    background: var(--ink);
+    border-bottom: 3px solid var(--red);
+    padding: 0 20px;
+    display: flex;
+    align-items: stretch;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-brand {
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--bg);
+    padding: 12px 20px 12px 0;
+    border-right: 1px solid #333;
+    margin-right: 4px;
+    display: flex; align-items: center;
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+  }
+  .nav-tab {
+    padding: 0 18px;
+    background: transparent; border: none;
+    border-bottom: 3px solid transparent;
+    color: #666;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.15s;
+    margin-bottom: -3px;
+    display: flex; align-items: center;
+  }
+  .nav-tab:hover  { color: #ccc; }
+  .nav-tab.active { color: #f2ede3; border-bottom-color: var(--red); }
+
+  /* ── PAGES ── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── CONTAINER ── */
+  .container {
+    max-width: 700px; margin: 0 auto;
+    padding: 28px 16px 64px;
+    display: flex; flex-direction: column; gap: 0;
+  }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    text-align: center;
+    padding: 0 0 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+  .page-header h2 {
+    font-family: 'Crimson Pro', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--ink);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .page-header p {
+    font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  .page-header .rule {
+    display: block; margin: 10px auto 0;
+    width: 32px; height: 2px; background: var(--red);
+  }
+
+  /* ── SECTION ── */
+  .section { margin-bottom: 18px; }
+  .section-label {
+    font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 7px; padding-left: 1px;
+  }
+
+  /* ── PANEL (card) ── */
+  .panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .panel-head {
+    padding: 7px 16px;
+    background: var(--ink); color: var(--bg);
+    font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .panel-head .red-dot { color: var(--red); font-size: 0.8rem; }
+
+  /* ── PILLS ── */
+  .pill-row { display: flex; flex-wrap: wrap; gap: 5px; padding: 10px 12px; }
+  .pill-row + .pill-row { padding-top: 0; }
+  .pill {
+    padding: 4px 12px; border: 1px solid var(--border2);
+    background: transparent; color: var(--warm);
+    cursor: pointer; font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 0.04em;
+    transition: all 0.12s;
+  }
+  .pill:hover { border-color: var(--ink); color: var(--ink); }
+  .pill.active-cat  { border-color: var(--ink); background: var(--ink); color: var(--bg); }
+  .pill.active-verb { background: var(--red); border-color: var(--red); color: #fff; }
+
+  /* ── SCORE ── */
+  .score-row { display: flex; border-top: 1px solid var(--border); }
+  .score-cell {
+    flex: 1; padding: 10px 8px; text-align: center;
+    border-right: 1px solid var(--border);
+  }
+  .score-cell:last-child { border-right: none; }
+  .score-cell .num {
+    display: block;
+    font-family: 'Crimson Pro', serif;
+    font-size: 2rem; font-weight: 600;
+    line-height: 1; margin-bottom: 2px;
+  }
+  .score-cell .lbl { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted); }
+  .score-cell.c .num { color: var(--green); }
+  .score-cell.w .num { color: var(--red); }
+  .score-cell.s .num { color: var(--ink); }
+
+  /* ── ANSWER CARD ── */
+  .card-inner { padding: 18px 18px 0; }
+
+  .topic-badge {
+    display: inline-block;
+    border: 1px solid var(--red);
+    color: var(--red);
+    padding: 2px 10px;
+    font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .prompt {
+    font-family: 'Crimson Pro', serif;
+    font-size: clamp(1.3rem, 3.5vw, 1.8rem);
+    font-weight: 400;
+    line-height: 1.4; margin-bottom: 6px;
+  }
+  .prompt .blank {
+    color: var(--red);
+    border-bottom: 2px solid var(--red);
+    padding-bottom: 1px;
+  }
+
+  .hint {
+    color: var(--muted); font-size: 0.72rem;
+    font-family: 'IBM Plex Mono', monospace;
+    margin-bottom: 18px;
+  }
+
+  .input-row { display: flex; gap: 0; padding: 0 18px 14px; }
+  input[type="text"] {
+    flex: 1;
+    background: var(--stripe);
+    border: 1px solid var(--border2);
+    border-right: none;
+    color: var(--ink);
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.15rem;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input[type="text"]:focus   { border-color: var(--ink); background: #fff; }
+  input[type="text"].correct { border-color: var(--green); background: #f0f7f2; }
+  input[type="text"].wrong   { border-color: var(--red);   background: #fdf5f5; }
+
+  .btn-primary {
+    background: var(--ink); color: var(--bg);
+    border: 1px solid var(--ink);
+    padding: 10px 18px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;
+    cursor: pointer; white-space: nowrap; transition: all 0.15s;
+  }
+  .btn-primary:hover { background: #333; }
+
+  .feedback {
+    margin: 0 18px 12px; padding: 10px 14px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.77rem; display: flex; align-items: center; gap: 10px;
+    transition: opacity 0.2s; border-left: 3px solid transparent;
+  }
+  .feedback.hidden  { opacity: 0; pointer-events: none; min-height: 40px; }
+  .feedback.correct { border-color: var(--green); background: #f0f7f2; color: var(--green); }
+  .feedback.wrong   { border-color: var(--red);   background: #fdf5f5; color: var(--red); }
+  .feedback .icon   { font-size: 0.9rem; flex-shrink: 0; }
+
+  .btn-next {
+    display: none; width: calc(100% - 36px); margin: 0 18px 14px;
+    background: transparent; border: 1px solid var(--border2);
+    color: var(--muted); padding: 9px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .btn-next:hover { border-color: var(--ink); color: var(--ink); }
+
+  .progress-bar  { height: 2px; background: var(--border); }
+  .progress-fill { height: 100%; background: var(--red); transition: width 0.4s ease; width: 0%; }
+
+  /* ── REF TABLE ── */
+  .ref-toggle-btn {
+    width: 100%; background: var(--stripe); border: none;
+    padding: 10px 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--warm); cursor: pointer;
+    text-align: left; display: flex; align-items: center; gap: 8px;
+    transition: color 0.15s; border-top: 1px solid var(--border);
+  }
+  .ref-toggle-btn:hover { color: var(--ink); }
+  .ref-toggle-btn .arrow { transition: transform 0.2s; }
+  .ref-toggle-btn.open .arrow { transform: rotate(90deg); }
+  .ref-body { display: none; border-top: 1px solid var(--border); }
+  .ref-body.open { display: block; }
+  .ref-body table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+  .ref-body th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--red); font-weight: 400;
+    padding: 8px 16px; text-align: left; border-bottom: 1px solid var(--border);
+    background: var(--stripe);
+  }
+  .ref-body td { padding: 8px 16px; border-bottom: 1px solid var(--border); }
+  .ref-body tr:last-child td { border-bottom: none; }
+  .ref-body tr:nth-child(even) td { background: var(--stripe); }
+  .ref-body td:first-child { color: var(--muted); width: 45%; font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; }
+  .ref-body td:last-child  { font-family: 'Crimson Pro', serif; font-style: italic; font-size: 1rem; }
+
+  /* ══════════════════════════════════
+     SENTENCE BUILDER
+  ══════════════════════════════════ */
+  .card-body { padding: 18px 18px 14px; }
+
+  .sb-english {
+    font-family: 'Crimson Pro', serif;
+    font-size: clamp(1.3rem, 3.5vw, 1.75rem);
+    color: var(--ink); margin-bottom: 5px; line-height: 1.4;
+  }
+  .sb-hint { color: var(--muted); font-size: 0.7rem; margin-bottom: 16px; }
+
+  .zone-label {
+    font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 6px;
+  }
+
+  .sb-dropzone {
+    min-height: 50px; background: #fff;
+    border: 1px solid var(--border2); border-top: 2px solid var(--ink);
+    padding: 10px 12px;
+    display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+    margin-bottom: 14px; transition: border-color 0.15s;
+  }
+  .sb-dropzone .placeholder {
+    color: var(--muted); font-size: 0.72rem;
+    font-family: 'IBM Plex Mono', monospace;
+    pointer-events: none;
+  }
+
+  .sb-wordbank { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+
+  .word-tile {
+    padding: 5px 12px;
+    background: var(--stripe); border: 1px solid var(--border2);
+    color: var(--ink);
+    font-family: 'Crimson Pro', serif; font-size: 1rem;
+    cursor: pointer; user-select: none; transition: all 0.12s;
+  }
+  .word-tile:hover  { border-color: var(--ink); background: #fff; }
+  .word-tile.placed { background: #fff; border-color: var(--ink); }
+  .word-tile.correct-tile { border-color: var(--green); color: var(--green); background: #f0f7f2; }
+  .word-tile.wrong-tile   { border-color: var(--red);   color: var(--red);   background: #fdf5f5; }
+
+  .sb-actions { display: flex; gap: 8px; }
+  .btn-secondary {
+    flex: 1; background: transparent; border: 1px solid var(--border2);
+    color: var(--muted); padding: 9px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.12s;
+  }
+  .btn-secondary:hover { border-color: var(--ink); color: var(--ink); }
+
+  /* ══════════════════════════════════
+     TRANSLATION DRILLS
+  ══════════════════════════════════ */
+  .td-difficulty {
+    display: flex; gap: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .diff-btn {
+    flex: 1; padding: 9px 8px;
+    background: var(--stripe); border: none; border-right: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.67rem; letter-spacing: 0.1em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.12s;
+  }
+  .diff-btn:last-child { border-right: none; }
+  .diff-btn:hover { background: #eee8de; color: var(--ink); }
+  .diff-btn.active { background: var(--ink); color: var(--bg); }
+
+  .td-english {
+    font-family: 'Crimson Pro', serif;
+    font-size: clamp(1.3rem, 3.5vw, 1.75rem);
+    color: var(--ink); line-height: 1.4; margin-bottom: 5px;
+  }
+  .td-hint { color: var(--muted); font-size: 0.7rem; margin-bottom: 18px; }
+
+  .td-answer-box { display: flex; gap: 0; padding: 0 18px 14px; }
+
+  .td-comparison {
+    margin: 0 18px 12px; border: 1px solid var(--border); display: none;
+  }
+  .td-comparison.show { display: block; }
+  .td-comp-row {
+    display: flex; align-items: flex-start; gap: 14px; padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .td-comp-row:last-child { border-bottom: none; }
+  .td-comp-row:nth-child(odd) { background: var(--stripe); }
+  .td-comp-label {
+    font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--muted); min-width: 46px; padding-top: 3px; flex-shrink: 0;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .td-comp-text { font-family: 'Crimson Pro', serif; font-size: 1rem; line-height: 1.4; }
+  .td-comp-text.model { color: var(--green); font-style: italic; }
+  .td-comp-text.yours { color: var(--ink); }
+
+  .td-note {
+    margin: 0 18px 12px; padding: 10px 14px;
+    background: #fdf8ec; border-left: 3px solid #c8920a;
+    font-size: 0.77rem; color: #7a5808;
+    font-family: 'IBM Plex Mono', monospace;
+    display: none;
+  }
+  .td-note.show { display: block; }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center; font-size: 0.62rem; color: var(--muted);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 6px 0 8px;
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+  }
+
+  /* ══════════════════════════════════
+     GENDER TRAINER
+  ══════════════════════════════════ */
+  .gn-btn-row { display: flex; gap: 12px; justify-content: center; }
+  .gn-choice-btn {
+    flex: 1; max-width: 160px;
+    background: var(--stripe); border: 2px solid var(--border2);
+    cursor: pointer; padding: 16px 12px;
+    transition: all 0.12s; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .gn-choice-btn:hover { border-color: var(--ink); background: #fff; }
+  .gn-choice-btn.selected-correct { background: #f0f7f2; border-color: var(--green); }
+  .gn-choice-btn.selected-wrong   { background: #fdf5f5; border-color: var(--red); }
+  .gn-choice-btn.reveal-correct   { background: #f0f7f2; border-color: var(--green); }
+  .gn-choice-btn.disabled { pointer-events: none; opacity: 0.5; }
+  .gn-article {
+    font-family: 'Crimson Pro', serif; font-size: 2rem; font-weight: 600; line-height: 1;
+  }
+  .gn-sublabel {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem;
+    text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted);
+  }
+  .gn-feedback-correct { color: var(--green); }
+  .gn-feedback-wrong   { color: var(--red); }
+
+  @keyframes shake {
+    0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)}
+  }
+  .shake { animation: shake 0.28s ease; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">Pratique du Français</div>
+  <button class="nav-tab active" onclick="showPage('conjugations',this)">Conjugations</button>
+  <button class="nav-tab" onclick="showPage('builder',this)">Sentence Builder</button>
+  <button class="nav-tab" onclick="showPage('translation',this)">Translation Drills</button>
+  <button class="nav-tab" onclick="showPage('gender',this)">Gender Trainer</button>
+</nav>
+
+<!-- ════════════════════════════════════════
+     PAGE 1: CONJUGATIONS
+════════════════════════════════════════ -->
+<div class="page active" id="page-conjugations">
+<div class="container">
+
+  <div class="page-header">
+    <h2>Conjugations</h2>
+    <p>A2–B1 · Fill in the correct form</p>
+    <span class="rule"></span>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Options</div>
+    <div class="panel">
+      <div class="pill-row" id="cj-catNav"></div>
+      <div class="pill-row" id="cj-tabs" style="padding-top:0;border-top:1px solid var(--border)"></div>
+      <div class="pill-row" id="cj-tenseRow" style="padding-top:0;border-top:1px solid var(--border)"></div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-bottom:18px">
+    <div class="panel-head">
+      <span>Score</span>
+      <span class="red-dot">■</span>
+    </div>
+    <div class="score-row">
+      <div class="score-cell c"><span class="num" id="cj-correct">0</span><span class="lbl">Correct</span></div>
+      <div class="score-cell w"><span class="num" id="cj-wrong">0</span><span class="lbl">Wrong</span></div>
+      <div class="score-cell s"><span class="num" id="cj-streak">0</span><span class="lbl">Streak</span></div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-bottom:18px">
+    <div class="panel-head">
+      <span id="cj-badge">loading...</span>
+    </div>
+    <div class="card-inner">
+      <div class="prompt" id="cj-prompt">Loading...</div>
+      <div class="hint" id="cj-hint"></div>
+    </div>
+    <div class="input-row">
+      <input type="text" id="cj-answer" placeholder="type your answer..." autocomplete="off" autocorrect="off" spellcheck="false">
+      <button class="btn-primary" id="cj-submitBtn" onclick="cjCheck()">Vérifier</button>
+    </div>
+    <div class="feedback hidden" id="cj-feedback">
+      <span class="icon" id="cj-fbIcon"></span><span id="cj-fbText"></span>
+    </div>
+    <button class="btn-next" id="cj-nextBtn" onclick="cjNext()">Next question →</button>
+    <div class="progress-bar"><div class="progress-fill" id="cj-progress"></div></div>
+  </div>
+
+  <div class="panel" style="margin-bottom:18px">
+    <button class="ref-toggle-btn" id="cj-refBtn" onclick="cjToggleRef()">
+      <span class="arrow">›</span><span>Reference table</span>
+    </button>
+    <div class="ref-body" id="cj-refBody"></div>
+  </div>
+
+  <div class="footer">press enter to check · accents optional · jamespardy.com</div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════
+     PAGE 2: SENTENCE BUILDER
+════════════════════════════════════════ -->
+<div class="page" id="page-builder">
+<div class="container">
+
+  <div class="page-header">
+    <h2>Sentence Builder</h2>
+    <p>A2–B1 · Arrange the words into correct French</p>
+    <span class="rule"></span>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Difficulty</div>
+    <div class="panel">
+      <div class="td-difficulty" id="sb-diffRow" style="border:none"></div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-bottom:18px">
+    <div class="panel-head"><span>Score</span><span class="red-dot">■</span></div>
+    <div class="score-row">
+      <div class="score-cell c"><span class="num" id="sb-correct">0</span><span class="lbl">Correct</span></div>
+      <div class="score-cell w"><span class="num" id="sb-wrong">0</span><span class="lbl">Wrong</span></div>
+      <div class="score-cell s"><span class="num" id="sb-streak">0</span><span class="lbl">Streak</span></div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-bottom:18px">
+    <div class="panel-head"><span id="sb-badge">loading...</span></div>
+    <div class="card-body">
+      <div class="sb-english" id="sb-english">Loading...</div>
+      <div class="sb-hint" id="sb-hint"></div>
+      <div class="zone-label">Your sentence</div>
+      <div class="sb-dropzone" id="sb-dropzone">
+        <span class="placeholder">Click words below to build your sentence...</span>
+      </div>
+      <div class="zone-label">Word bank</div>
+      <div class="sb-wordbank" id="sb-wordbank"></div>
+      <div class="sb-actions">
+        <button class="btn-secondary" onclick="sbClear()">↺ Clear</button>
+        <button class="btn-primary" id="sb-submitBtn" onclick="sbCheck()" style="flex:2;border-left:none">Check →</button>
+      </div>
+    </div>
+    <div class="feedback hidden" id="sb-feedback">
+      <span class="icon" id="sb-fbIcon"></span><span id="sb-fbText"></span>
+    </div>
+    <button class="btn-next" id="sb-nextBtn" onclick="sbNext()">Next question →</button>
+    <div class="progress-bar"><div class="progress-fill" id="sb-progress"></div></div>
+  </div>
+
+  <div class="footer">click a word to place it · click a placed word to return it · jamespardy.com</div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════
+     PAGE 3: TRANSLATION DRILLS
+════════════════════════════════════════ -->
+<div class="page" id="page-translation">
+<div class="container">
+
+  <div class="page-header">
+    <h2>Translation Drills</h2>
+    <p>A2–B1 · Translate English into French</p>
+    <span class="rule"></span>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Difficulty</div>
+    <div class="panel">
+      <div class="td-difficulty" id="td-diffRow" style="border:none"></div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-bottom:18px">
+    <div class="panel-head"><span>Score</span><span class="red-dot">■</span></div>
+    <div class="score-row">
+      <div class="score-cell c"><span class="num" id="td-correct">0</span><span class="lbl">Correct</span></div>
+      <div class="score-cell w"><span class="num" id="td-wrong">0</span><span class="lbl">Wrong</span></div>
+      <div class="score-cell s"><span class="num" id="td-streak">0</span><span class="lbl">Streak</span></div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-bottom:18px">
+    <div class="panel-head"><span id="td-badge">loading...</span></div>
+    <div class="card-body">
+      <div class="td-english" id="td-english">Loading...</div>
+      <div class="td-hint" id="td-hint"></div>
+    </div>
+    <div class="td-answer-box">
+      <input type="text" id="td-answer" placeholder="Write in French..." autocomplete="off" autocorrect="off" spellcheck="false">
+      <button class="btn-primary" id="td-submitBtn" onclick="tdCheck()">Check</button>
+    </div>
+    <div class="feedback hidden" id="td-feedback">
+      <span class="icon" id="td-fbIcon"></span><span id="td-fbText"></span>
+    </div>
+    <div class="td-comparison" id="td-comparison">
+      <div class="td-comp-row">
+        <span class="td-comp-label">Model</span>
+        <span class="td-comp-text model" id="td-model"></span>
+      </div>
+      <div class="td-comp-row">
+        <span class="td-comp-label">Yours</span>
+        <span class="td-comp-text yours" id="td-yours"></span>
+      </div>
+    </div>
+    <div class="td-note" id="td-note"></div>
+    <button class="btn-next" id="td-nextBtn" onclick="tdNext()">Next question →</button>
+    <div class="progress-bar"><div class="progress-fill" id="td-progress"></div></div>
+  </div>
+
+  <div class="footer">accents optional · close matches accepted · jamespardy.com</div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════
+     PAGE 4: GENDER TRAINER
+════════════════════════════════════════ -->
+<div class="page" id="page-gender">
+<div class="container">
+
+  <div class="page-header">
+    <h2>Gender Trainer</h2>
+    <p>A2–B1 · Le ou La ?</p>
+    <span class="rule"></span>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Category</div>
+    <div class="panel">
+      <div class="td-difficulty" id="gn-catRow" style="border:none;flex-wrap:wrap"></div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-bottom:18px">
+    <div class="panel-head"><span>Score</span><span class="red-dot">■</span></div>
+    <div class="score-row">
+      <div class="score-cell c"><span class="num" id="gn-correct">0</span><span class="lbl">Correct</span></div>
+      <div class="score-cell w"><span class="num" id="gn-wrong">0</span><span class="lbl">Wrong</span></div>
+      <div class="score-cell s"><span class="num" id="gn-streak">0</span><span class="lbl">Streak</span></div>
+    </div>
+  </div>
+
+  <!-- Flashcard -->
+  <div class="panel" style="margin-bottom:18px" id="gn-card">
+    <div class="panel-head">
+      <span id="gn-badge">loading...</span>
+      <span id="gn-counter" style="font-size:0.6rem;color:#888">0 / 0</span>
+    </div>
+    <div style="padding:32px 18px 24px;text-align:center">
+      <div id="gn-word" style="font-family:'Crimson Pro',serif;font-size:clamp(2rem,8vw,3.5rem);font-weight:300;margin-bottom:8px;letter-spacing:0.02em">—</div>
+      <div id="gn-hint-eng" style="font-size:0.75rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-bottom:28px">—</div>
+      <div class="gn-btn-row">
+        <button class="gn-choice-btn" id="gn-le" onclick="gnGuess('le')">
+          <span class="gn-article">le</span>
+          <span class="gn-sublabel">masculin</span>
+        </button>
+        <button class="gn-choice-btn" id="gn-la" onclick="gnGuess('la')">
+          <span class="gn-article">la</span>
+          <span class="gn-sublabel">féminin</span>
+        </button>
+      </div>
+      <div id="gn-feedback" style="margin-top:18px;min-height:36px;font-family:'IBM Plex Mono',monospace;font-size:0.78rem"></div>
+    </div>
+    <button class="btn-next" id="gn-nextBtn" onclick="gnNext()" style="margin:0 18px 14px">Next →</button>
+    <div class="progress-bar"><div class="progress-fill" id="gn-progress"></div></div>
+  </div>
+
+  <!-- Gender rules reference -->
+  <div class="panel" style="margin-bottom:18px">
+    <button class="ref-toggle-btn" id="gn-refBtn" onclick="gnToggleRef()">
+      <span class="arrow">›</span><span>Gender rules & patterns</span>
+    </button>
+    <div class="ref-body" id="gn-refBody" style="display:none">
+      <table>
+        <tr><th>Usually masculine</th><th>Usually feminine</th></tr>
+        <tr><td>-age (le voyage)</td><td>-tion, -sion (la nation)</td></tr>
+        <tr><td>-ment (le gouvernement)</td><td>-té, -tié (la liberté)</td></tr>
+        <tr><td>-eau (le château)</td><td>-ure (la culture)</td></tr>
+        <tr><td>-isme (le tourisme)</td><td>-ance, -ence (la chance)</td></tr>
+        <tr><td>-phone, -scope (le téléphone)</td><td>-ette (la baguette)</td></tr>
+        <tr><td>Days, months, seasons</td><td>-ie (la boulangerie)</td></tr>
+        <tr><td>Languages (le français)</td><td>Most fruits (la pomme)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer">← arrow for le · → arrow for la · space for next · jamespardy.com</div>
+</div>
+</div>
+
+<script>
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function normalize(s) {
+  return (s||'').trim().toLowerCase()
+    .replace(/[àâä]/g,'a').replace(/[éèêë]/g,'e')
+    .replace(/[îï]/g,'i').replace(/[ôö]/g,'o')
+    .replace(/[ùûü]/g,'u').replace(/ç/g,'c')
+    .replace(/['']/g,"'");
+}
+
+/* ══ CONJUGATION DATA ══
+   Each verb has three tense sets: present, pc (passé composé), imp (imparfait)
+   ref object has three keys too.
+   Possessifs only has present (no tenses apply).
+══════════════════════════════════════════ */
+
+// Helper: build a tense-annotated badge
+function tenseBadge(verbBadge, tense) {
+  const labels = {present:'présent', pc:'passé composé', imp:'imparfait'};
+  return verbBadge + ' · ' + labels[tense];
+}
+
+const cjData = {
+  etre:{label:"être",cat:"essentials",
+    present:{questions:[
+      {q:"Je ___ étudiant(e).",hint:"I am a student.",answer:"suis"},
+      {q:"Tu ___ fatigué(e) ?",hint:"Are you tired?",answer:"es"},
+      {q:"Il/Elle ___ médecin.",hint:"He/She is a doctor.",answer:"est"},
+      {q:"Nous ___ en France.",hint:"We are in France.",answer:"sommes"},
+      {q:"Vous ___ prêt(s) ?",hint:"Are you ready?",answer:"êtes"},
+      {q:"Ils/Elles ___ amis.",hint:"They are friends.",answer:"sont"},
+    ],ref:[["je","suis"],["tu","es"],["il/elle","est"],["nous","sommes"],["vous","êtes"],["ils/elles","sont"]]},
+    pc:{questions:[
+      {q:"Je ___ allé(e) au marché.",hint:"I went to the market. (être + pp of aller)",answer:"suis"},
+      {q:"Tu ___ arrivé(e) en retard.",hint:"You arrived late.",answer:"es"},
+      {q:"Elle ___ partie hier.",hint:"She left yesterday.",answer:"est"},
+      {q:"Nous ___ restés à la maison.",hint:"We stayed at home.",answer:"sommes"},
+      {q:"Vous ___ venus comment ?",hint:"How did you come?",answer:"êtes"},
+      {q:"Ils ___ nés en France.",hint:"They were born in France.",answer:"sont"},
+    ],ref:[["je","suis + pp"],["tu","es + pp"],["il/elle","est + pp"],["nous","sommes + pp"],["vous","êtes + pp"],["ils/elles","sont + pp"]]},
+    imp:{questions:[
+      {q:"J'___ enfant quand ça s'est passé.",hint:"I was a child when it happened.",answer:"étais"},
+      {q:"Tu ___ toujours en retard.",hint:"You were always late.",answer:"étais"},
+      {q:"Il ___ très fatigué.",hint:"He was very tired.",answer:"était"},
+      {q:"Nous ___ à Paris.",hint:"We were in Paris.",answer:"étions"},
+      {q:"Vous ___ prêts ?",hint:"Were you ready?",answer:"étiez"},
+      {q:"Ils ___ contents.",hint:"They were happy.",answer:"étaient"},
+    ],ref:[["j'","étais"],["tu","étais"],["il/elle","était"],["nous","étions"],["vous","étiez"],["ils/elles","étaient"]]},
+  },
+  avoir:{label:"avoir",cat:"essentials",
+    present:{questions:[
+      {q:"J'___ faim.",hint:"I am hungry.",answer:"ai"},
+      {q:"Tu ___ un stylo ?",hint:"Do you have a pen?",answer:"as"},
+      {q:"Il ___ vingt ans.",hint:"He is twenty years old.",answer:"a"},
+      {q:"Nous ___ une voiture.",hint:"We have a car.",answer:"avons"},
+      {q:"Vous ___ raison.",hint:"You are right.",answer:"avez"},
+      {q:"Elles ___ peur.",hint:"They are afraid.",answer:"ont"},
+    ],ref:[["j'","ai"],["tu","as"],["il/elle","a"],["nous","avons"],["vous","avez"],["ils/elles","ont"]]},
+    pc:{questions:[
+      {q:"J'___ mangé une pomme.",hint:"I ate an apple.",answer:"ai"},
+      {q:"Tu ___ vu ce film ?",hint:"Did you see that film?",answer:"as"},
+      {q:"Il ___ fini son travail.",hint:"He finished his work.",answer:"a"},
+      {q:"Nous ___ parlé longtemps.",hint:"We talked for a long time.",answer:"avons"},
+      {q:"Vous ___ compris ?",hint:"Did you understand?",answer:"avez"},
+      {q:"Ils ___ pris le train.",hint:"They took the train.",answer:"ont"},
+    ],ref:[["j'","ai + pp"],["tu","as + pp"],["il/elle","a + pp"],["nous","avons + pp"],["vous","avez + pp"],["ils/elles","ont + pp"]]},
+    imp:{questions:[
+      {q:"J'___ faim.",hint:"I was hungry.",answer:"avais"},
+      {q:"Tu ___ toujours raison.",hint:"You were always right.",answer:"avais"},
+      {q:"Il ___ les yeux bleus.",hint:"He had blue eyes.",answer:"avait"},
+      {q:"Nous ___ une grande maison.",hint:"We had a big house.",answer:"avions"},
+      {q:"Vous ___ peur ?",hint:"Were you afraid?",answer:"aviez"},
+      {q:"Ils ___ beaucoup d'amis.",hint:"They had many friends.",answer:"avaient"},
+    ],ref:[["j'","avais"],["tu","avais"],["il/elle","avait"],["nous","avions"],["vous","aviez"],["ils/elles","avaient"]]},
+  },
+  aller:{label:"aller",cat:"essentials",
+    present:{questions:[
+      {q:"Je ___ au marché.",hint:"I am going to the market.",answer:"vais"},
+      {q:"Tu ___ bien ?",hint:"Are you well?",answer:"vas"},
+      {q:"Il ___ à Paris.",hint:"He is going to Paris.",answer:"va"},
+      {q:"Nous ___ au cinéma.",hint:"We are going to the cinema.",answer:"allons"},
+      {q:"Vous ___ où ?",hint:"Where are you going?",answer:"allez"},
+      {q:"Ils ___ à l'école.",hint:"They are going to school.",answer:"vont"},
+    ],ref:[["je","vais"],["tu","vas"],["il/elle","va"],["nous","allons"],["vous","allez"],["ils/elles","vont"]]},
+    pc:{questions:[
+      {q:"Je ___ allé(e) à Lyon.",hint:"I went to Lyon. (être verb!)",answer:"suis"},
+      {q:"Tu ___ allé(e) au marché ?",hint:"Did you go to the market?",answer:"es"},
+      {q:"Elle ___ allée en vacances.",hint:"She went on holiday.",answer:"est"},
+      {q:"Nous ___ allés au cinéma.",hint:"We went to the cinema.",answer:"sommes"},
+      {q:"Vous ___ allés à Paris ?",hint:"Did you go to Paris?",answer:"êtes"},
+      {q:"Ils ___ allés à l'école.",hint:"They went to school.",answer:"sont"},
+    ],ref:[["je","suis allé(e)"],["tu","es allé(e)"],["il/elle","est allé(e)"],["nous","sommes allé(e)s"],["vous","êtes allé(e)s"],["ils/elles","sont allé(e)s"]]},
+    imp:{questions:[
+      {q:"J'___ souvent au parc.",hint:"I used to go to the park often.",answer:"allais"},
+      {q:"Tu ___ à quelle école ?",hint:"Which school did you go to?",answer:"allais"},
+      {q:"Il ___ au travail en vélo.",hint:"He used to cycle to work.",answer:"allait"},
+      {q:"Nous ___ à la plage chaque été.",hint:"We used to go to the beach every summer.",answer:"allions"},
+      {q:"Vous ___ souvent au restaurant ?",hint:"Did you often go to restaurants?",answer:"alliez"},
+      {q:"Ils ___ à l'église le dimanche.",hint:"They used to go to church on Sundays.",answer:"allaient"},
+    ],ref:[["j'","allais"],["tu","allais"],["il/elle","allait"],["nous","allions"],["vous","alliez"],["ils/elles","allaient"]]},
+  },
+  faire:{label:"faire",cat:"essentials",
+    present:{questions:[
+      {q:"Je ___ la cuisine.",hint:"I do the cooking.",answer:"fais"},
+      {q:"Tu ___ du sport ?",hint:"Do you do sport?",answer:"fais"},
+      {q:"Il ___ beau aujourd'hui.",hint:"The weather is nice today.",answer:"fait"},
+      {q:"Nous ___ nos devoirs.",hint:"We do our homework.",answer:"faisons"},
+      {q:"Vous ___ quoi ?",hint:"What are you doing?",answer:"faites"},
+      {q:"Ils ___ la fête.",hint:"They are partying.",answer:"font"},
+    ],ref:[["je","fais"],["tu","fais"],["il/elle","fait"],["nous","faisons"],["vous","faites"],["ils/elles","font"]]},
+    pc:{questions:[
+      {q:"J'___ fait une erreur.",hint:"I made a mistake.",answer:"ai"},
+      {q:"Tu ___ fait quoi hier ?",hint:"What did you do yesterday?",answer:"as"},
+      {q:"Il ___ fait beau toute la semaine.",hint:"The weather was nice all week.",answer:"a"},
+      {q:"Nous ___ fait une promenade.",hint:"We went for a walk.",answer:"avons"},
+      {q:"Vous ___ fait du bon travail.",hint:"You did good work.",answer:"avez"},
+      {q:"Ils ___ fait la fête.",hint:"They partied.",answer:"ont"},
+    ],ref:[["j'","ai fait"],["tu","as fait"],["il/elle","a fait"],["nous","avons fait"],["vous","avez fait"],["ils/elles","ont fait"]]},
+    imp:{questions:[
+      {q:"Je ___ du sport chaque matin.",hint:"I used to do sport every morning.",answer:"faisais"},
+      {q:"Tu ___ toujours la cuisine ?",hint:"Did you always do the cooking?",answer:"faisais"},
+      {q:"Il ___ froid ce jour-là.",hint:"It was cold that day.",answer:"faisait"},
+      {q:"Nous ___ nos devoirs ensemble.",hint:"We used to do our homework together.",answer:"faisions"},
+      {q:"Vous ___ quoi le week-end ?",hint:"What did you used to do at weekends?",answer:"faisiez"},
+      {q:"Ils ___ du bruit la nuit.",hint:"They used to make noise at night.",answer:"faisaient"},
+    ],ref:[["je","faisais"],["tu","faisais"],["il/elle","faisait"],["nous","faisions"],["vous","faisiez"],["ils/elles","faisaient"]]},
+  },
+  vouloir:{label:"vouloir",cat:"modals",
+    present:{questions:[
+      {q:"Je ___ partir.",hint:"I want to leave.",answer:"veux"},
+      {q:"Tu ___ du café ?",hint:"Do you want some coffee?",answer:"veux"},
+      {q:"Elle ___ un billet.",hint:"She wants a ticket.",answer:"veut"},
+      {q:"Nous ___ voyager.",hint:"We want to travel.",answer:"voulons"},
+      {q:"Vous ___ quoi ?",hint:"What do you want?",answer:"voulez"},
+      {q:"Ils ___ rester.",hint:"They want to stay.",answer:"veulent"},
+    ],ref:[["je","veux"],["tu","veux"],["il/elle","veut"],["nous","voulons"],["vous","voulez"],["ils/elles","veulent"]]},
+    pc:{questions:[
+      {q:"J'___ voulu rester.",hint:"I wanted to stay.",answer:"ai"},
+      {q:"Tu ___ voulu partir ?",hint:"Did you want to leave?",answer:"as"},
+      {q:"Il ___ voulu venir.",hint:"He wanted to come.",answer:"a"},
+      {q:"Nous ___ voulu essayer.",hint:"We wanted to try.",answer:"avons"},
+      {q:"Vous ___ voulu quoi ?",hint:"What did you want?",answer:"avez"},
+      {q:"Ils ___ voulu attendre.",hint:"They wanted to wait.",answer:"ont"},
+    ],ref:[["j'","ai voulu"],["tu","as voulu"],["il/elle","a voulu"],["nous","avons voulu"],["vous","avez voulu"],["ils/elles","ont voulu"]]},
+    imp:{questions:[
+      {q:"Je ___ être médecin.",hint:"I wanted to be a doctor.",answer:"voulais"},
+      {q:"Tu ___ toujours avoir raison.",hint:"You always wanted to be right.",answer:"voulais"},
+      {q:"Il ___ partir sans payer.",hint:"He wanted to leave without paying.",answer:"voulait"},
+      {q:"Nous ___ une grande maison.",hint:"We wanted a big house.",answer:"voulions"},
+      {q:"Vous ___ quoi exactement ?",hint:"What exactly did you want?",answer:"vouliez"},
+      {q:"Ils ___ tout changer.",hint:"They wanted to change everything.",answer:"voulaient"},
+    ],ref:[["je","voulais"],["tu","voulais"],["il/elle","voulait"],["nous","voulions"],["vous","vouliez"],["ils/elles","voulaient"]]},
+  },
+  pouvoir:{label:"pouvoir",cat:"modals",
+    present:{questions:[
+      {q:"Je ___ t'aider.",hint:"I can help you.",answer:"peux"},
+      {q:"Tu ___ venir ?",hint:"Can you come?",answer:"peux"},
+      {q:"Il ___ parler français.",hint:"He can speak French.",answer:"peut"},
+      {q:"Nous ___ essayer.",hint:"We can try.",answer:"pouvons"},
+      {q:"Vous ___ répéter ?",hint:"Can you repeat?",answer:"pouvez"},
+      {q:"Ils ___ partir.",hint:"They can leave.",answer:"peuvent"},
+    ],ref:[["je","peux"],["tu","peux"],["il/elle","peut"],["nous","pouvons"],["vous","pouvez"],["ils/elles","peuvent"]]},
+    pc:{questions:[
+      {q:"J'___ pu finir à temps.",hint:"I was able to finish in time.",answer:"ai"},
+      {q:"Tu ___ pu venir hier ?",hint:"Were you able to come yesterday?",answer:"as"},
+      {q:"Il ___ pu partir tôt.",hint:"He was able to leave early.",answer:"a"},
+      {q:"Nous ___ pu entrer.",hint:"We were able to get in.",answer:"avons"},
+      {q:"Vous ___ pu réserver ?",hint:"Were you able to book?",answer:"avez"},
+      {q:"Ils ___ pu finir le projet.",hint:"They were able to finish the project.",answer:"ont"},
+    ],ref:[["j'","ai pu"],["tu","as pu"],["il/elle","a pu"],["nous","avons pu"],["vous","avez pu"],["ils/elles","ont pu"]]},
+    imp:{questions:[
+      {q:"Je ___ courir très vite.",hint:"I could run very fast.",answer:"pouvais"},
+      {q:"Tu ___ nager à cinq ans.",hint:"You could swim at age five.",answer:"pouvais"},
+      {q:"Il ___ travailler des heures.",hint:"He could work for hours.",answer:"pouvait"},
+      {q:"Nous ___ sortir le soir.",hint:"We were able to go out in the evenings.",answer:"pouvions"},
+      {q:"Vous ___ répéter ?",hint:"Could you repeat?",answer:"pouviez"},
+      {q:"Ils ___ venir à n'importe quelle heure.",hint:"They could come at any time.",answer:"pouvaient"},
+    ],ref:[["je","pouvais"],["tu","pouvais"],["il/elle","pouvait"],["nous","pouvions"],["vous","pouviez"],["ils/elles","pouvaient"]]},
+  },
+  devoir:{label:"devoir",cat:"modals",
+    present:{questions:[
+      {q:"Je ___ travailler.",hint:"I must work.",answer:"dois"},
+      {q:"Tu ___ partir maintenant.",hint:"You must leave now.",answer:"dois"},
+      {q:"Elle ___ étudier.",hint:"She must study.",answer:"doit"},
+      {q:"Nous ___ rentrer.",hint:"We must go home.",answer:"devons"},
+      {q:"Vous ___ choisir.",hint:"You must choose.",answer:"devez"},
+      {q:"Ils ___ payer.",hint:"They must pay.",answer:"doivent"},
+    ],ref:[["je","dois"],["tu","dois"],["il/elle","doit"],["nous","devons"],["vous","devez"],["ils/elles","doivent"]]},
+    pc:{questions:[
+      {q:"J'___ dû annuler.",hint:"I had to cancel.",answer:"ai"},
+      {q:"Tu ___ dû partir tôt.",hint:"You had to leave early.",answer:"as"},
+      {q:"Il ___ dû payer l'amende.",hint:"He had to pay the fine.",answer:"a"},
+      {q:"Nous ___ dû attendre.",hint:"We had to wait.",answer:"avons"},
+      {q:"Vous ___ dû choisir.",hint:"You had to choose.",answer:"avez"},
+      {q:"Ils ___ dû rentrer.",hint:"They had to go home.",answer:"ont"},
+    ],ref:[["j'","ai dû"],["tu","as dû"],["il/elle","a dû"],["nous","avons dû"],["vous","avez dû"],["ils/elles","ont dû"]]},
+    imp:{questions:[
+      {q:"Je ___ travailler tous les jours.",hint:"I had to work every day.",answer:"devais"},
+      {q:"Tu ___ rentrer avant minuit.",hint:"You had to be home before midnight.",answer:"devais"},
+      {q:"Il ___ s'occuper de sa mère.",hint:"He had to look after his mother.",answer:"devait"},
+      {q:"Nous ___ payer chaque mois.",hint:"We had to pay every month.",answer:"devions"},
+      {q:"Vous ___ partir si tôt ?",hint:"Did you have to leave so early?",answer:"deviez"},
+      {q:"Ils ___ se lever à six heures.",hint:"They had to get up at six.",answer:"devaient"},
+    ],ref:[["je","devais"],["tu","devais"],["il/elle","devait"],["nous","devions"],["vous","deviez"],["ils/elles","devaient"]]},
+  },
+  savoir:{label:"savoir",cat:"modals",
+    present:{questions:[
+      {q:"Je ___ nager.",hint:"I know how to swim.",answer:"sais"},
+      {q:"Tu ___ l'heure ?",hint:"Do you know the time?",answer:"sais"},
+      {q:"Il ___ jouer de la guitare.",hint:"He knows how to play guitar.",answer:"sait"},
+      {q:"Nous ___ la réponse.",hint:"We know the answer.",answer:"savons"},
+      {q:"Vous ___ où c'est ?",hint:"Do you know where it is?",answer:"savez"},
+      {q:"Ils ___ cuisiner.",hint:"They know how to cook.",answer:"savent"},
+    ],ref:[["je","sais"],["tu","sais"],["il/elle","sait"],["nous","savons"],["vous","savez"],["ils/elles","savent"]]},
+    pc:{questions:[
+      {q:"J'___ su la réponse.",hint:"I knew the answer.",answer:"ai"},
+      {q:"Tu ___ su qu'il partait ?",hint:"Did you know he was leaving?",answer:"as"},
+      {q:"Il ___ su la vérité.",hint:"He found out the truth.",answer:"a"},
+      {q:"Nous ___ su trop tard.",hint:"We found out too late.",answer:"avons"},
+      {q:"Vous ___ su comment faire ?",hint:"Did you know how to do it?",answer:"avez"},
+      {q:"Ils ___ su s'adapter.",hint:"They knew how to adapt.",answer:"ont"},
+    ],ref:[["j'","ai su"],["tu","as su"],["il/elle","a su"],["nous","avons su"],["vous","avez su"],["ils/elles","ont su"]]},
+    imp:{questions:[
+      {q:"Je ___ jouer du piano.",hint:"I used to know how to play piano.",answer:"savais"},
+      {q:"Tu ___ déjà lire à quatre ans.",hint:"You could already read at four.",answer:"savais"},
+      {q:"Il ___ tout sur la guerre.",hint:"He knew everything about the war.",answer:"savait"},
+      {q:"Nous ___ que c'était faux.",hint:"We knew it was wrong.",answer:"savions"},
+      {q:"Vous ___ où elle habitait ?",hint:"Did you know where she lived?",answer:"saviez"},
+      {q:"Ils ___ bien s'exprimer.",hint:"They knew how to express themselves well.",answer:"savaient"},
+    ],ref:[["je","savais"],["tu","savais"],["il/elle","savait"],["nous","savions"],["vous","saviez"],["ils/elles","savaient"]]},
+  },
+  parler:{label:"parler",cat:"regular_er",
+    present:{questions:[
+      {q:"Je ___ français.",hint:"I speak French.",answer:"parle"},
+      {q:"Tu ___ trop vite.",hint:"You speak too fast.",answer:"parles"},
+      {q:"Il ___ avec sa mère.",hint:"He speaks with his mother.",answer:"parle"},
+      {q:"Nous ___ ensemble.",hint:"We speak together.",answer:"parlons"},
+      {q:"Vous ___ anglais ?",hint:"Do you speak English?",answer:"parlez"},
+      {q:"Elles ___ doucement.",hint:"They speak softly.",answer:"parlent"},
+    ],ref:[["je","parle"],["tu","parles"],["il/elle","parle"],["nous","parlons"],["vous","parlez"],["ils/elles","parlent"]]},
+    pc:{questions:[
+      {q:"J'___ parlé au directeur.",hint:"I spoke to the director.",answer:"ai"},
+      {q:"Tu ___ parlé à Marie ?",hint:"Did you speak to Marie?",answer:"as"},
+      {q:"Il ___ parlé trop vite.",hint:"He spoke too fast.",answer:"a"},
+      {q:"Nous ___ parlé longtemps.",hint:"We talked for a long time.",answer:"avons"},
+      {q:"Vous ___ parlé de quoi ?",hint:"What did you talk about?",answer:"avez"},
+      {q:"Elles ___ parlé ensemble.",hint:"They spoke together.",answer:"ont"},
+    ],ref:[["j'","ai parlé"],["tu","as parlé"],["il/elle","a parlé"],["nous","avons parlé"],["vous","avez parlé"],["ils/elles","ont parlé"]]},
+    imp:{questions:[
+      {q:"Je ___ souvent de toi.",hint:"I used to talk about you often.",answer:"parlais"},
+      {q:"Tu ___ trop fort.",hint:"You used to speak too loudly.",answer:"parlais"},
+      {q:"Il ___ avec ses mains.",hint:"He used to talk with his hands.",answer:"parlait"},
+      {q:"Nous ___ chaque jour.",hint:"We used to talk every day.",answer:"parlions"},
+      {q:"Vous ___ de politique.",hint:"You used to talk about politics.",answer:"parliez"},
+      {q:"Elles ___ en même temps.",hint:"They used to speak at the same time.",answer:"parlaient"},
+    ],ref:[["je","parlais"],["tu","parlais"],["il/elle","parlait"],["nous","parlions"],["vous","parliez"],["ils/elles","parlaient"]]},
+  },
+  manger:{label:"manger",cat:"regular_er",
+    present:{questions:[
+      {q:"Je ___ une pomme.",hint:"I eat an apple.",answer:"mange"},
+      {q:"Tu ___ quoi ?",hint:"What are you eating?",answer:"manges"},
+      {q:"Elle ___ au restaurant.",hint:"She eats at the restaurant.",answer:"mange"},
+      {q:"Nous ___ ensemble ce soir.",hint:"We eat together tonight.",answer:"mangeons"},
+      {q:"Vous ___ bien ici ?",hint:"Do you eat well here?",answer:"mangez"},
+      {q:"Ils ___ tôt.",hint:"They eat early.",answer:"mangent"},
+    ],ref:[["je","mange"],["tu","manges"],["il/elle","mange"],["nous","mangeons"],["vous","mangez"],["ils/elles","mangent"]]},
+    pc:{questions:[
+      {q:"J'___ mangé une pizza.",hint:"I ate a pizza.",answer:"ai"},
+      {q:"Tu ___ mangé quoi ?",hint:"What did you eat?",answer:"as"},
+      {q:"Elle ___ mangé au restaurant.",hint:"She ate at the restaurant.",answer:"a"},
+      {q:"Nous ___ mangé ensemble.",hint:"We ate together.",answer:"avons"},
+      {q:"Vous ___ mangé où ?",hint:"Where did you eat?",answer:"avez"},
+      {q:"Ils ___ mangé tôt.",hint:"They ate early.",answer:"ont"},
+    ],ref:[["j'","ai mangé"],["tu","as mangé"],["il/elle","a mangé"],["nous","avons mangé"],["vous","avez mangé"],["ils/elles","ont mangé"]]},
+    imp:{questions:[
+      {q:"Je ___ trop de sucre.",hint:"I used to eat too much sugar.",answer:"mangeais"},
+      {q:"Tu ___ toujours vite.",hint:"You always used to eat fast.",answer:"mangeais"},
+      {q:"Elle ___ peu.",hint:"She used to eat little.",answer:"mangeait"},
+      {q:"Nous ___ ensemble chaque dimanche.",hint:"We used to eat together every Sunday.",answer:"mangions"},
+      {q:"Vous ___ où avant ?",hint:"Where did you used to eat?",answer:"mangiez"},
+      {q:"Ils ___ rarement à la maison.",hint:"They rarely ate at home.",answer:"mangeaient"},
+    ],ref:[["je","mangeais"],["tu","mangeais"],["il/elle","mangeait"],["nous","mangions"],["vous","mangiez"],["ils/elles","mangeaient"]]},
+  },
+  finir:{label:"finir",cat:"regular_ir",
+    present:{questions:[
+      {q:"Je ___ mon travail.",hint:"I finish my work.",answer:"finis"},
+      {q:"Tu ___ à quelle heure ?",hint:"What time do you finish?",answer:"finis"},
+      {q:"Il ___ le repas.",hint:"He finishes the meal.",answer:"finit"},
+      {q:"Nous ___ bientôt.",hint:"We finish soon.",answer:"finissons"},
+      {q:"Vous ___ le projet ?",hint:"Are you finishing the project?",answer:"finissez"},
+      {q:"Ils ___ leurs études.",hint:"They finish their studies.",answer:"finissent"},
+    ],ref:[["je","finis"],["tu","finis"],["il/elle","finit"],["nous","finissons"],["vous","finissez"],["ils/elles","finissent"]]},
+    pc:{questions:[
+      {q:"J'___ fini à six heures.",hint:"I finished at six.",answer:"ai"},
+      {q:"Tu ___ fini ton devoir ?",hint:"Did you finish your homework?",answer:"as"},
+      {q:"Il ___ fini le repas.",hint:"He finished the meal.",answer:"a"},
+      {q:"Nous ___ fini juste à temps.",hint:"We finished just in time.",answer:"avons"},
+      {q:"Vous ___ fini le rapport ?",hint:"Did you finish the report?",answer:"avez"},
+      {q:"Ils ___ fini leurs études.",hint:"They finished their studies.",answer:"ont"},
+    ],ref:[["j'","ai fini"],["tu","as fini"],["il/elle","a fini"],["nous","avons fini"],["vous","avez fini"],["ils/elles","ont fini"]]},
+    imp:{questions:[
+      {q:"Je ___ toujours à l'heure.",hint:"I always used to finish on time.",answer:"finissais"},
+      {q:"Tu ___ tes devoirs le soir ?",hint:"Did you used to finish homework in the evenings?",answer:"finissais"},
+      {q:"Il ___ tard chaque soir.",hint:"He used to finish late every evening.",answer:"finissait"},
+      {q:"Nous ___ ensemble.",hint:"We used to finish together.",answer:"finissions"},
+      {q:"Vous ___ à quelle heure ?",hint:"What time did you used to finish?",answer:"finissiez"},
+      {q:"Ils ___ le travail en avance.",hint:"They used to finish the work early.",answer:"finissaient"},
+    ],ref:[["je","finissais"],["tu","finissais"],["il/elle","finissait"],["nous","finissions"],["vous","finissiez"],["ils/elles","finissaient"]]},
+  },
+  prendre:{label:"prendre",cat:"regular_re",
+    present:{questions:[
+      {q:"Je ___ le bus.",hint:"I take the bus.",answer:"prends"},
+      {q:"Tu ___ un café ?",hint:"Are you having a coffee?",answer:"prends"},
+      {q:"Elle ___ sa décision.",hint:"She makes her decision.",answer:"prend"},
+      {q:"Nous ___ le train.",hint:"We take the train.",answer:"prenons"},
+      {q:"Vous ___ le menu.",hint:"You take the set menu.",answer:"prenez"},
+      {q:"Ils ___ des photos.",hint:"They take photos.",answer:"prennent"},
+    ],ref:[["je","prends"],["tu","prends"],["il/elle","prend"],["nous","prenons"],["vous","prenez"],["ils/elles","prennent"]]},
+    pc:{questions:[
+      {q:"J'___ pris le train.",hint:"I took the train.",answer:"ai"},
+      {q:"Tu ___ pris le bon chemin ?",hint:"Did you take the right way?",answer:"as"},
+      {q:"Elle ___ pris sa décision.",hint:"She made her decision.",answer:"a"},
+      {q:"Nous ___ pris un taxi.",hint:"We took a taxi.",answer:"avons"},
+      {q:"Vous ___ pris le menu ?",hint:"Did you take the set menu?",answer:"avez"},
+      {q:"Ils ___ pris des photos.",hint:"They took photos.",answer:"ont"},
+    ],ref:[["j'","ai pris"],["tu","as pris"],["il/elle","a pris"],["nous","avons pris"],["vous","avez pris"],["ils/elles","ont pris"]]},
+    imp:{questions:[
+      {q:"Je ___ toujours le bus.",hint:"I always used to take the bus.",answer:"prenais"},
+      {q:"Tu ___ le train chaque matin.",hint:"You used to take the train every morning.",answer:"prenais"},
+      {q:"Elle ___ des notes.",hint:"She used to take notes.",answer:"prenait"},
+      {q:"Nous ___ notre temps.",hint:"We used to take our time.",answer:"prenions"},
+      {q:"Vous ___ quoi comme transport ?",hint:"What transport did you use?",answer:"preniez"},
+      {q:"Ils ___ toujours des risques.",hint:"They always used to take risks.",answer:"prenaient"},
+    ],ref:[["je","prenais"],["tu","prenais"],["il/elle","prenait"],["nous","prenions"],["vous","preniez"],["ils/elles","prenaient"]]},
+  },
+  vendre:{label:"vendre",cat:"regular_re",
+    present:{questions:[
+      {q:"Je ___ ma voiture.",hint:"I am selling my car.",answer:"vends"},
+      {q:"Tu ___ des légumes ?",hint:"Do you sell vegetables?",answer:"vends"},
+      {q:"Il ___ des billets.",hint:"He sells tickets.",answer:"vend"},
+      {q:"Nous ___ en ligne.",hint:"We sell online.",answer:"vendons"},
+      {q:"Vous ___ quoi ?",hint:"What do you sell?",answer:"vendez"},
+      {q:"Ils ___ leurs meubles.",hint:"They are selling their furniture.",answer:"vendent"},
+    ],ref:[["je","vends"],["tu","vends"],["il/elle","vend"],["nous","vendons"],["vous","vendez"],["ils/elles","vendent"]]},
+    pc:{questions:[
+      {q:"J'___ vendu ma voiture.",hint:"I sold my car.",answer:"ai"},
+      {q:"Tu ___ vendu ta maison ?",hint:"Did you sell your house?",answer:"as"},
+      {q:"Il ___ vendu beaucoup.",hint:"He sold a lot.",answer:"a"},
+      {q:"Nous ___ vendu en ligne.",hint:"We sold online.",answer:"avons"},
+      {q:"Vous ___ vendu combien ?",hint:"How many did you sell?",answer:"avez"},
+      {q:"Ils ___ vendu leurs meubles.",hint:"They sold their furniture.",answer:"ont"},
+    ],ref:[["j'","ai vendu"],["tu","as vendu"],["il/elle","a vendu"],["nous","avons vendu"],["vous","avez vendu"],["ils/elles","ont vendu"]]},
+    imp:{questions:[
+      {q:"Je ___ des journaux.",hint:"I used to sell newspapers.",answer:"vendais"},
+      {q:"Tu ___ des glaces l'été ?",hint:"Did you used to sell ice creams in summer?",answer:"vendais"},
+      {q:"Il ___ des fruits au marché.",hint:"He used to sell fruit at the market.",answer:"vendait"},
+      {q:"Nous ___ en gros.",hint:"We used to sell wholesale.",answer:"vendions"},
+      {q:"Vous ___ quoi avant ?",hint:"What did you used to sell?",answer:"vendiez"},
+      {q:"Ils ___ beaucoup.",hint:"They used to sell a lot.",answer:"vendaient"},
+    ],ref:[["je","vendais"],["tu","vendais"],["il/elle","vendait"],["nous","vendions"],["vous","vendiez"],["ils/elles","vendaient"]]},
+  },
+  venir:{label:"venir",cat:"irregulars",
+    present:{questions:[
+      {q:"Je ___ tout de suite.",hint:"I am coming right away.",answer:"viens"},
+      {q:"Tu ___ avec moi ?",hint:"Are you coming with me?",answer:"viens"},
+      {q:"Il ___ de Paris.",hint:"He comes from Paris.",answer:"vient"},
+      {q:"Nous ___ en voiture.",hint:"We are coming by car.",answer:"venons"},
+      {q:"Vous ___ souvent ?",hint:"Do you come often?",answer:"venez"},
+      {q:"Ils ___ ce soir.",hint:"They are coming this evening.",answer:"viennent"},
+    ],ref:[["je","viens"],["tu","viens"],["il/elle","vient"],["nous","venons"],["vous","venez"],["ils/elles","viennent"]]},
+    pc:{questions:[
+      {q:"Je ___ venu(e) hier.",hint:"I came yesterday. (être verb!)",answer:"suis"},
+      {q:"Tu ___ venu(e) comment ?",hint:"How did you come?",answer:"es"},
+      {q:"Il ___ venu à pied.",hint:"He came on foot.",answer:"est"},
+      {q:"Nous ___ venus ensemble.",hint:"We came together.",answer:"sommes"},
+      {q:"Vous ___ venus pourquoi ?",hint:"Why did you come?",answer:"êtes"},
+      {q:"Ils ___ venus ce matin.",hint:"They came this morning.",answer:"sont"},
+    ],ref:[["je","suis venu(e)"],["tu","es venu(e)"],["il/elle","est venu(e)"],["nous","sommes venu(e)s"],["vous","êtes venu(e)s"],["ils/elles","sont venu(e)s"]]},
+    imp:{questions:[
+      {q:"Je ___ souvent te voir.",hint:"I used to come and see you often.",answer:"venais"},
+      {q:"Tu ___ toujours en retard.",hint:"You always used to come late.",answer:"venais"},
+      {q:"Il ___ chaque dimanche.",hint:"He used to come every Sunday.",answer:"venait"},
+      {q:"Nous ___ à pied.",hint:"We used to come on foot.",answer:"venions"},
+      {q:"Vous ___ souvent ici ?",hint:"Did you come here often?",answer:"veniez"},
+      {q:"Ils ___ de loin.",hint:"They used to come from far away.",answer:"venaient"},
+    ],ref:[["je","venais"],["tu","venais"],["il/elle","venait"],["nous","venions"],["vous","veniez"],["ils/elles","venaient"]]},
+  },
+  voir:{label:"voir",cat:"irregulars",
+    present:{questions:[
+      {q:"Je ___ bien.",hint:"I see well.",answer:"vois"},
+      {q:"Tu ___ ce film ?",hint:"Are you watching this film?",answer:"vois"},
+      {q:"Il ___ ses amis.",hint:"He sees his friends.",answer:"voit"},
+      {q:"Nous ___ le problème.",hint:"We see the problem.",answer:"voyons"},
+      {q:"Vous ___ la différence ?",hint:"Do you see the difference?",answer:"voyez"},
+      {q:"Ils ___ rarement.",hint:"They rarely see each other.",answer:"voient"},
+    ],ref:[["je","vois"],["tu","vois"],["il/elle","voit"],["nous","voyons"],["vous","voyez"],["ils/elles","voient"]]},
+    pc:{questions:[
+      {q:"J'___ vu ce film.",hint:"I saw that film.",answer:"ai"},
+      {q:"Tu ___ vu Marie ?",hint:"Did you see Marie?",answer:"as"},
+      {q:"Il ___ vu un accident.",hint:"He saw an accident.",answer:"a"},
+      {q:"Nous ___ vu la tour Eiffel.",hint:"We saw the Eiffel Tower.",answer:"avons"},
+      {q:"Vous ___ vu le match ?",hint:"Did you see the match?",answer:"avez"},
+      {q:"Ils ___ vu un film.",hint:"They saw a film.",answer:"ont"},
+    ],ref:[["j'","ai vu"],["tu","as vu"],["il/elle","a vu"],["nous","avons vu"],["vous","avez vu"],["ils/elles","ont vu"]]},
+    imp:{questions:[
+      {q:"Je ___ mal sans mes lunettes.",hint:"I used to see badly without glasses.",answer:"voyais"},
+      {q:"Tu ___ tes amis souvent ?",hint:"Did you used to see your friends often?",answer:"voyais"},
+      {q:"Elle ___ un médecin chaque mois.",hint:"She used to see a doctor every month.",answer:"voyait"},
+      {q:"Nous ___ rarement nos voisins.",hint:"We rarely used to see our neighbours.",answer:"voyions"},
+      {q:"Vous ___ la mer de chez vous ?",hint:"Could you see the sea from your house?",answer:"voyiez"},
+      {q:"Ils ___ leurs parents le week-end.",hint:"They used to see their parents at weekends.",answer:"voyaient"},
+    ],ref:[["je","voyais"],["tu","voyais"],["il/elle","voyait"],["nous","voyions"],["vous","voyiez"],["ils/elles","voyaient"]]},
+  },
+  lire:{label:"lire",cat:"irregulars",
+    present:{questions:[
+      {q:"Je ___ un roman.",hint:"I read a novel.",answer:"lis"},
+      {q:"Tu ___ beaucoup ?",hint:"Do you read a lot?",answer:"lis"},
+      {q:"Elle ___ le journal.",hint:"She reads the newspaper.",answer:"lit"},
+      {q:"Nous ___ ensemble.",hint:"We read together.",answer:"lisons"},
+      {q:"Vous ___ quoi ?",hint:"What are you reading?",answer:"lisez"},
+      {q:"Ils ___ des BD.",hint:"They read comics.",answer:"lisent"},
+    ],ref:[["je","lis"],["tu","lis"],["il/elle","lit"],["nous","lisons"],["vous","lisez"],["ils/elles","lisent"]]},
+    pc:{questions:[
+      {q:"J'___ lu ce livre.",hint:"I read that book.",answer:"ai"},
+      {q:"Tu ___ lu le journal ?",hint:"Did you read the newspaper?",answer:"as"},
+      {q:"Elle ___ lu trois romans.",hint:"She read three novels.",answer:"a"},
+      {q:"Nous ___ lu la lettre.",hint:"We read the letter.",answer:"avons"},
+      {q:"Vous ___ lu notre rapport ?",hint:"Did you read our report?",answer:"avez"},
+      {q:"Ils ___ lu le même livre.",hint:"They read the same book.",answer:"ont"},
+    ],ref:[["j'","ai lu"],["tu","as lu"],["il/elle","a lu"],["nous","avons lu"],["vous","avez lu"],["ils/elles","ont lu"]]},
+    imp:{questions:[
+      {q:"Je ___ beaucoup étant enfant.",hint:"I used to read a lot as a child.",answer:"lisais"},
+      {q:"Tu ___ le journal chaque matin.",hint:"You used to read the newspaper every morning.",answer:"lisais"},
+      {q:"Il ___ avant de dormir.",hint:"He used to read before sleeping.",answer:"lisait"},
+      {q:"Nous ___ à voix haute.",hint:"We used to read aloud.",answer:"lisions"},
+      {q:"Vous ___ quoi comme genre ?",hint:"What genre did you used to read?",answer:"lisiez"},
+      {q:"Ils ___ des BD le dimanche.",hint:"They used to read comics on Sundays.",answer:"lisaient"},
+    ],ref:[["je","lisais"],["tu","lisais"],["il/elle","lisait"],["nous","lisions"],["vous","lisiez"],["ils/elles","lisaient"]]},
+  },
+  dire:{label:"dire",cat:"irregulars",
+    present:{questions:[
+      {q:"Je ___ la vérité.",hint:"I tell the truth.",answer:"dis"},
+      {q:"Tu ___ quoi ?",hint:"What are you saying?",answer:"dis"},
+      {q:"Il ___ bonjour.",hint:"He says hello.",answer:"dit"},
+      {q:"Nous ___ au revoir.",hint:"We say goodbye.",answer:"disons"},
+      {q:"Vous ___ comment ?",hint:"What do you say?",answer:"dites"},
+      {q:"Ils ___ n'importe quoi.",hint:"They say anything.",answer:"disent"},
+    ],ref:[["je","dis"],["tu","dis"],["il/elle","dit"],["nous","disons"],["vous","dites"],["ils/elles","disent"]]},
+    pc:{questions:[
+      {q:"J'___ dit la vérité.",hint:"I told the truth.",answer:"ai"},
+      {q:"Tu ___ dit quoi ?",hint:"What did you say?",answer:"as"},
+      {q:"Il ___ dit bonjour.",hint:"He said hello.",answer:"a"},
+      {q:"Nous ___ dit au revoir.",hint:"We said goodbye.",answer:"avons"},
+      {q:"Vous ___ dit ça ?",hint:"Did you say that?",answer:"avez"},
+      {q:"Ils ___ dit n'importe quoi.",hint:"They said anything.",answer:"ont"},
+    ],ref:[["j'","ai dit"],["tu","as dit"],["il/elle","a dit"],["nous","avons dit"],["vous","avez dit"],["ils/elles","ont dit"]]},
+    imp:{questions:[
+      {q:"Je ___ toujours la vérité.",hint:"I always used to tell the truth.",answer:"disais"},
+      {q:"Tu ___ souvent des bêtises.",hint:"You used to often say silly things.",answer:"disais"},
+      {q:"Il ___ qu'il était occupé.",hint:"He used to say he was busy.",answer:"disait"},
+      {q:"Nous ___ la même chose.",hint:"We used to say the same thing.",answer:"disions"},
+      {q:"Vous ___ que c'était facile.",hint:"You used to say it was easy.",answer:"disiez"},
+      {q:"Ils ___ que non.",hint:"They used to say no.",answer:"disaient"},
+    ],ref:[["je","disais"],["tu","disais"],["il/elle","disait"],["nous","disions"],["vous","disiez"],["ils/elles","disaient"]]},
+  },
+  mettre:{label:"mettre",cat:"irregulars",
+    present:{questions:[
+      {q:"Je ___ mon manteau.",hint:"I put on my coat.",answer:"mets"},
+      {q:"Tu ___ du sucre ?",hint:"Do you put sugar?",answer:"mets"},
+      {q:"Elle ___ la table.",hint:"She sets the table.",answer:"met"},
+      {q:"Nous ___ les bagages.",hint:"We put the luggage.",answer:"mettons"},
+      {q:"Vous ___ combien de temps ?",hint:"How long does it take you?",answer:"mettez"},
+      {q:"Ils ___ leurs chaussures.",hint:"They put on their shoes.",answer:"mettent"},
+    ],ref:[["je","mets"],["tu","mets"],["il/elle","met"],["nous","mettons"],["vous","mettez"],["ils/elles","mettent"]]},
+    pc:{questions:[
+      {q:"J'___ mis mon manteau.",hint:"I put on my coat.",answer:"ai"},
+      {q:"Tu ___ mis combien de temps ?",hint:"How long did it take you?",answer:"as"},
+      {q:"Elle ___ mis la table.",hint:"She set the table.",answer:"a"},
+      {q:"Nous ___ mis les bagages.",hint:"We put the luggage.",answer:"avons"},
+      {q:"Vous ___ mis où les clés ?",hint:"Where did you put the keys?",answer:"avez"},
+      {q:"Ils ___ mis leurs chaussures.",hint:"They put on their shoes.",answer:"ont"},
+    ],ref:[["j'","ai mis"],["tu","as mis"],["il/elle","a mis"],["nous","avons mis"],["vous","avez mis"],["ils/elles","ont mis"]]},
+    imp:{questions:[
+      {q:"Je ___ toujours un chapeau.",hint:"I always used to wear a hat.",answer:"mettais"},
+      {q:"Tu ___ combien de temps pour y aller ?",hint:"How long did it used to take you?",answer:"mettais"},
+      {q:"Elle ___ la table chaque soir.",hint:"She used to set the table every evening.",answer:"mettait"},
+      {q:"Nous ___ nos économies à la banque.",hint:"We used to put our savings in the bank.",answer:"mettions"},
+      {q:"Vous ___ du sucre dans votre café ?",hint:"Did you used to put sugar in your coffee?",answer:"mettiez"},
+      {q:"Ils ___ leurs jouets partout.",hint:"They used to put their toys everywhere.",answer:"mettaient"},
+    ],ref:[["je","mettais"],["tu","mettais"],["il/elle","mettait"],["nous","mettions"],["vous","mettiez"],["ils/elles","mettaient"]]},
+  },
+  possessifs:{label:"Possessifs",cat:"possessifs",
+    present:{questions:[
+      {q:"___ livre (my, masc. sing.)",hint:"my book",answer:"mon"},
+      {q:"___ maison (my, fem. sing.)",hint:"my house",answer:"ma"},
+      {q:"___ amie (my, before vowel sound)",hint:"Special form before any vowel sound!",answer:"mon"},
+      {q:"___ frères (my, plural)",hint:"my brothers",answer:"mes"},
+      {q:"___ père (your informal, masc.)",hint:"your father — tu form",answer:"ton"},
+      {q:"___ voiture (your informal, fem.)",hint:"your car — tu form",answer:"ta"},
+      {q:"___ amis (your informal, plural)",hint:"your friends — tu form",answer:"tes"},
+      {q:"___ chien (his/her, masc.)",hint:"his/her dog",answer:"son"},
+      {q:"___ mère (his/her, fem.)",hint:"his/her mother",answer:"sa"},
+      {q:"___ enfants (his/her, plural)",hint:"his/her children",answer:"ses"},
+      {q:"___ maison (our, fem.)",hint:"our house",answer:"notre"},
+      {q:"___ parents (our, plural)",hint:"our parents",answer:"nos"},
+      {q:"___ professeur (your formal, sing.)",hint:"your teacher — vous form",answer:"votre"},
+      {q:"___ idées (your formal, plural)",hint:"your ideas — vous form",answer:"vos"},
+      {q:"___ appartement (their, masc.)",hint:"their apartment",answer:"leur"},
+      {q:"___ bagages (their, plural)",hint:"their luggage",answer:"leurs"},
+    ],ref:[["mon / ma / mes","my"],["ton / ta / tes","your (tu)"],["son / sa / ses","his / her / its"],["notre / nos","our"],["votre / vos","your (vous)"],["leur / leurs","their"]]},
+    pc:{questions:[]},imp:{questions:[]},
+  },
+};
+
+const cjCats = [
+  {id:"all",label:"All"},{id:"essentials",label:"Essentials"},{id:"modals",label:"Modaux"},
+  {id:"regular_er",label:"-er"},{id:"regular_ir",label:"-ir"},{id:"regular_re",label:"-re"},
+  {id:"irregulars",label:"Irréguliers"},{id:"possessifs",label:"Possessifs"},
+];
+const cjTenses = [
+  {id:"all",label:"All tenses"},
+  {id:"present",label:"Présent"},
+  {id:"pc",label:"Passé composé"},
+  {id:"imp",label:"Imparfait"},
+];
+
+let cjCat='all', cjTopic='all', cjTense='all', cjQ=null, cjAnswered=false, cjRefOpen=false;
+let cjDone=0, cjScores={c:0,w:0,s:0}, cjHistory=[];
+
+function cjTopics(cat){ 
+  if(cat==='all') return Object.entries(cjData).filter(([k])=>k!=='possessifs').map(([k])=>k);
+  return Object.entries(cjData).filter(([,v])=>v.cat===cat).map(([k])=>k);
+}
+
+function cjPool(){
+  const topics = cjTopic==='all' ? cjTopics(cjCat) : [cjTopic];
+  const tenses = cjTense==='all' ? ['present','pc','imp'] : [cjTense];
+  return topics.flatMap(k =>
+    tenses.flatMap(t => {
+      const qs = cjData[k][t]?.questions || [];
+      return qs.map(q => ({...q, topic:k, tense:t, badge: tenseBadge('verb · '+cjData[k].label, t)}));
+    })
+  ).filter(q => q.q); // remove empty (possessifs pc/imp)
+}
+
+function cjBuildCats(){
+  const c=document.getElementById('cj-catNav'); c.innerHTML='';
+  cjCats.forEach(cat=>{
+    const b=document.createElement('button');
+    b.className='pill'+(cat.id===cjCat?' active-cat':'');
+    b.textContent=cat.label;
+    b.onclick=()=>{ cjCat=cat.id; cjTopic='all'; cjBuildCats(); cjBuildTabs(); cjBuildTenses(); cjNext(); };
+    c.appendChild(b);
+  });
+}
+function cjBuildTabs(){
+  const c=document.getElementById('cj-tabs'); c.innerHTML='';
+  const all=document.createElement('button');
+  all.className='pill'+(cjTopic==='all'?' active-verb':'');
+  all.textContent='All'; all.onclick=()=>{ cjTopic='all'; cjBuildTabs(); cjNext(); };
+  c.appendChild(all);
+  cjTopics(cjCat).forEach(k=>{
+    const b=document.createElement('button');
+    b.className='pill'+(cjTopic===k?' active-verb':'');
+    b.textContent=cjData[k].label;
+    b.onclick=()=>{ cjTopic=k; cjBuildTabs(); cjNext(); };
+    c.appendChild(b);
+  });
+}
+function cjBuildTenses(){
+  const c=document.getElementById('cj-tenseRow'); c.innerHTML='';
+  // Hide tense row for possessifs (tenses don't apply)
+  if(cjCat==='possessifs'){ c.style.display='none'; cjTense='present'; return; }
+  c.style.display='';
+  cjTenses.forEach(t=>{
+    const b=document.createElement('button');
+    b.className='pill'+(t.id===cjTense?' active-cat':'');
+    b.textContent=t.label;
+    b.onclick=()=>{ cjTense=t.id; cjBuildTenses(); cjNext(); };
+    c.appendChild(b);
+  });
+}
+function cjNext(){
+  const pool=cjPool(); if(!pool.length) return;
+  const recent=cjHistory.slice(-5);
+  const fresh=pool.filter(q=>!recent.includes(q.q));
+  const src=fresh.length>0?fresh:pool;
+  cjQ=src[Math.floor(Math.random()*src.length)];
+  cjHistory.push(cjQ.q); if(cjHistory.length>40) cjHistory.shift();
+  document.getElementById('cj-badge').textContent=cjQ.badge;
+  document.getElementById('cj-prompt').innerHTML=cjQ.q.replace('___','<span class="blank">___</span>');
+  document.getElementById('cj-hint').textContent=cjQ.hint||'';
+  const inp=document.getElementById('cj-answer');
+  inp.value=''; inp.className='';
+  document.getElementById('cj-feedback').className='feedback hidden';
+  document.getElementById('cj-nextBtn').style.display='none';
+  document.getElementById('cj-submitBtn').textContent='Vérifier';
+  cjAnswered=false;
+  cjBuildRef(cjQ.topic, cjQ.tense);
+  if(cjRefOpen) document.getElementById('cj-refBody').classList.add('open');
+  inp.focus();
+  document.getElementById('cj-progress').style.width=(cjDone%pool.length)/pool.length*100+'%';
+}
+function cjBuildRef(k, tense){
+  const t=cjData[k]; if(!t) return;
+  const isPoss=k==='possessifs';
+  const tenseData = t[tense] || t.present;
+  const [h1,h2]=isPoss?['adjective','meaning']:['pronoun','conjugation'];
+  document.getElementById('cj-refBody').innerHTML=`<table><tr><th>${h1}</th><th>${h2}</th></tr>${tenseData.ref.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</table>`;
+}
+function cjCheck(){
+  if(cjAnswered){cjNext();return;}
+  const val=document.getElementById('cj-answer').value; if(!val.trim()) return;
+  const correct=cjQ.answer;
+  const ok=[correct,...(cjQ.alt?[cjQ.alt]:[])].some(a=>normalize(val)===normalize(a));
+  cjAnswered=true; cjDone++;
+  const inp=document.getElementById('cj-answer');
+  const fb=document.getElementById('cj-feedback');
+  if(ok){ cjScores.c++; cjScores.s++; inp.className='correct'; fb.className='feedback correct'; document.getElementById('cj-fbIcon').textContent='✓'; document.getElementById('cj-fbText').innerHTML='Correct — <strong>'+correct+'</strong>'; }
+  else { cjScores.w++; cjScores.s=0; inp.className='wrong'; fb.className='feedback wrong'; document.getElementById('cj-fbIcon').textContent='✗'; document.getElementById('cj-fbText').innerHTML='Answer: <strong>'+correct+'</strong>'; inp.classList.add('shake'); setTimeout(()=>inp.classList.remove('shake'),280); }
+  document.getElementById('cj-correct').textContent=cjScores.c;
+  document.getElementById('cj-wrong').textContent=cjScores.w;
+  document.getElementById('cj-streak').textContent=cjScores.s;
+  document.getElementById('cj-nextBtn').style.display='block';
+  document.getElementById('cj-submitBtn').textContent='Next →';
+}
+function cjToggleRef(){
+  cjRefOpen=!cjRefOpen;
+  document.getElementById('cj-refBody').classList.toggle('open',cjRefOpen);
+  document.getElementById('cj-refBtn').classList.toggle('open',cjRefOpen);
+}
+document.getElementById('cj-answer').addEventListener('keydown',e=>{ if(e.key==='Enter') cjCheck(); });
+cjBuildCats(); cjBuildTabs(); cjBuildTenses(); cjNext();
+
+/* ══ SENTENCE BUILDER DATA ══ */
+const sbData = {
+  beginner:[
+    {english:"I am French.",answer:"Je suis français.",words:["Je","suis","français","anglais","il","est"]},
+    {english:"She has a cat.",answer:"Elle a un chat.",words:["Elle","a","un","chat","chien","il","deux"]},
+    {english:"We are at home.",answer:"Nous sommes à la maison.",words:["Nous","sommes","à","la","maison","école","ils"]},
+    {english:"He speaks English.",answer:"Il parle anglais.",words:["Il","parle","anglais","français","elle","mange"]},
+    {english:"I want a coffee.",answer:"Je veux un café.",words:["Je","veux","un","café","thé","elle","ai"]},
+    {english:"You are tired.",answer:"Tu es fatigué.",words:["Tu","es","fatigué","content","je","suis"]},
+    {english:"They eat early.",answer:"Ils mangent tôt.",words:["Ils","mangent","tôt","tard","elle","boit","vite"]},
+    {english:"I live in Paris.",answer:"J'habite à Paris.",words:["J'habite","à","Paris","Lyon","je","vis","en"]},
+    {english:"She is a doctor.",answer:"Elle est médecin.",words:["Elle","est","médecin","professeur","il","a"]},
+    {english:"We have a car.",answer:"Nous avons une voiture.",words:["Nous","avons","une","voiture","moto","ils","ont"]},
+  ],
+  intermediate:[
+    {english:"I am going to the market.",answer:"Je vais au marché.",words:["Je","vais","au","marché","cinéma","elle","va","le"]},
+    {english:"She reads the newspaper every day.",answer:"Elle lit le journal chaque jour.",words:["Elle","lit","le","journal","chaque","jour","livre","il","tous","les"]},
+    {english:"We must leave now.",answer:"Nous devons partir maintenant.",words:["Nous","devons","partir","maintenant","demain","ils","voulons","rester"]},
+    {english:"Can you repeat please?",answer:"Vous pouvez répéter s'il vous plaît ?",words:["Vous","pouvez","répéter","s'il","vous","plaît","merci","tu","peux","dire"]},
+    {english:"He is looking for his keys.",answer:"Il cherche ses clés.",words:["Il","cherche","ses","clés","son","sac","elle","trouve","les"]},
+    {english:"I don't understand the question.",answer:"Je ne comprends pas la question.",words:["Je","ne","comprends","pas","la","question","réponse","il","comprend","les"]},
+    {english:"She is waiting for the bus.",answer:"Elle attend le bus.",words:["Elle","attend","le","bus","train","il","prend","la"]},
+    {english:"We are going to the cinema tonight.",answer:"Nous allons au cinéma ce soir.",words:["Nous","allons","au","cinéma","ce","soir","demain","ils","vont","théâtre"]},
+    {english:"I know how to cook.",answer:"Je sais cuisiner.",words:["Je","sais","cuisiner","nager","elle","peut","il","veux"]},
+    {english:"They want to travel.",answer:"Ils veulent voyager.",words:["Ils","veulent","voyager","rester","elles","peuvent","dormir","nous"]},
+  ],
+  advanced:[
+    {english:"You must not forget your passport.",answer:"Vous ne devez pas oublier votre passeport.",words:["Vous","ne","devez","pas","oublier","votre","passeport","billet","ils","ont","leur"]},
+    {english:"She doesn't know where he lives.",answer:"Elle ne sait pas où il habite.",words:["Elle","ne","sait","pas","où","il","habite","va","je","connais"]},
+    {english:"We are looking for a quiet restaurant.",answer:"Nous cherchons un restaurant tranquille.",words:["Nous","cherchons","un","restaurant","tranquille","bruyant","ils","trouvent","hôtel"]},
+    {english:"I can't come this evening.",answer:"Je ne peux pas venir ce soir.",words:["Je","ne","peux","pas","venir","ce","soir","partir","demain","elle"]},
+    {english:"He says he doesn't have time.",answer:"Il dit qu'il n'a pas le temps.",words:["Il","dit","qu'il","n'a","pas","le","temps","l'argent","elle","pense","son"]},
+    {english:"They are choosing their courses together.",answer:"Ils choisissent leurs cours ensemble.",words:["Ils","choisissent","leurs","cours","ensemble","seuls","elles","finissent","classes","notre"]},
+    {english:"Do you know this restaurant?",answer:"Vous connaissez ce restaurant ?",words:["Vous","connaissez","ce","restaurant","hôtel","tu","connais","il","sait","le"]},
+    {english:"She sets the table before dinner.",answer:"Elle met la table avant le dîner.",words:["Elle","met","la","table","avant","le","dîner","déjeuner","il","fait","après"]},
+  ],
+};
+
+const sbDiffs=['beginner','intermediate','advanced'];
+let sbDiff='beginner',sbQ=null,sbAnswered=false,sbDone=0;
+let sbScores={c:0,w:0,s:0},sbHistory=[],sbPlaced=[];
+
+function sbBuildDiffs(){
+  const c=document.getElementById('sb-diffRow');c.innerHTML='';
+  sbDiffs.forEach(d=>{
+    const b=document.createElement('button');
+    b.className='diff-btn'+(d===sbDiff?' active':'');
+    b.textContent=d.charAt(0).toUpperCase()+d.slice(1);
+    b.onclick=()=>{sbDiff=d;sbBuildDiffs();sbNext();};
+    c.appendChild(b);
+  });
+}
+function sbNext(){
+  const pool=sbData[sbDiff];
+  const fresh=pool.filter(q=>!sbHistory.slice(-3).includes(q.english));
+  const src=fresh.length>0?fresh:pool;
+  sbQ=src[Math.floor(Math.random()*src.length)];
+  sbHistory.push(sbQ.english);if(sbHistory.length>20)sbHistory.shift();
+  sbPlaced=[];sbAnswered=false;
+  document.getElementById('sb-badge').textContent=sbDiff+' · sentence builder';
+  document.getElementById('sb-english').textContent=sbQ.english;
+  document.getElementById('sb-hint').textContent='';
+  document.getElementById('sb-feedback').className='feedback hidden';
+  document.getElementById('sb-nextBtn').style.display='none';
+  document.getElementById('sb-submitBtn').textContent='Check →';
+  document.getElementById('sb-submitBtn').disabled=false;
+  sbRenderDropzone();sbRenderWordbank();
+  document.getElementById('sb-progress').style.width=(sbDone%pool.length)/pool.length*100+'%';
+}
+function sbRenderDropzone(){
+  const dz=document.getElementById('sb-dropzone');dz.innerHTML='';
+  if(sbPlaced.length===0){dz.innerHTML='<span class="placeholder">Click words below to build your sentence...</span>';return;}
+  sbPlaced.forEach((word,i)=>{
+    const t=document.createElement('span');t.className='word-tile placed';t.textContent=word;
+    t.onclick=()=>{if(sbAnswered)return;sbPlaced.splice(i,1);sbRenderDropzone();sbRenderWordbank();};
+    dz.appendChild(t);
+  });
+}
+function sbRenderWordbank(){
+  const wb=document.getElementById('sb-wordbank');wb.innerHTML='';
+  const words=[...sbQ.words].sort(()=>Math.random()-0.5);
+  words.forEach(word=>{
+    if(sbPlaced.filter(w=>w===word).length>=sbQ.words.filter(w=>w===word).length)return;
+    const t=document.createElement('span');t.className='word-tile';t.textContent=word;
+    t.onclick=()=>{if(sbAnswered)return;sbPlaced.push(word);sbRenderDropzone();sbRenderWordbank();};
+    wb.appendChild(t);
+  });
+}
+function sbClear(){if(sbAnswered)return;sbPlaced=[];sbRenderDropzone();sbRenderWordbank();}
+function sbCheck(){
+  if(sbAnswered){sbNext();return;}
+  if(sbPlaced.length===0)return;
+  const strip=s=>normalize(s).replace(/[?!.,]/g,'').replace(/\s+/g,' ').trim();
+  const ok=strip(sbPlaced.join(' '))===strip(sbQ.answer);
+  sbAnswered=true;sbDone++;
+  document.getElementById('sb-dropzone').querySelectorAll('.word-tile').forEach(t=>{t.classList.add(ok?'correct-tile':'wrong-tile');});
+  const fb=document.getElementById('sb-feedback');
+  if(ok){sbScores.c++;sbScores.s++;fb.className='feedback correct';document.getElementById('sb-fbIcon').textContent='✓';document.getElementById('sb-fbText').innerHTML='Correct!';}
+  else{sbScores.w++;sbScores.s=0;fb.className='feedback wrong';document.getElementById('sb-fbIcon').textContent='✗';document.getElementById('sb-fbText').innerHTML='Answer: <em>'+sbQ.answer+'</em>';}
+  document.getElementById('sb-correct').textContent=sbScores.c;
+  document.getElementById('sb-wrong').textContent=sbScores.w;
+  document.getElementById('sb-streak').textContent=sbScores.s;
+  document.getElementById('sb-nextBtn').style.display='block';
+  document.getElementById('sb-submitBtn').textContent='Next →';
+}
+sbBuildDiffs();sbNext();
+
+/* ══ TRANSLATION DATA ══ */
+const tdData={
+  beginner:[
+    {en:"I am hungry.",fr:"J'ai faim.",note:"Use 'avoir faim' not 'être faim'."},
+    {en:"She is tired.",fr:"Elle est fatiguée.",note:"Adjective agrees with subject: fatiguée (fem)."},
+    {en:"We have a dog.",fr:"Nous avons un chien."},
+    {en:"He goes to school.",fr:"Il va à l'école."},
+    {en:"I like music.",fr:"J'aime la musique."},
+    {en:"Are you ready?",fr:"Tu es prêt ?",alt:"Vous êtes prêt ?"},
+    {en:"They eat at noon.",fr:"Ils mangent à midi."},
+    {en:"I live in Lyon.",fr:"J'habite à Lyon."},
+    {en:"It is beautiful today.",fr:"Il fait beau aujourd'hui.",note:"Use 'faire' for weather."},
+    {en:"I am reading a book.",fr:"Je lis un livre."},
+    {en:"She speaks French.",fr:"Elle parle français."},
+    {en:"We are going home.",fr:"Nous rentrons à la maison.",alt:"Nous allons à la maison."},
+  ],
+  intermediate:[
+    {en:"I don't understand.",fr:"Je ne comprends pas."},
+    {en:"Can you speak more slowly?",fr:"Tu peux parler plus lentement ?",alt:"Vous pouvez parler plus lentement ?"},
+    {en:"I have been waiting for twenty minutes.",fr:"J'attends depuis vingt minutes.",note:"French uses present tense + depuis for ongoing actions."},
+    {en:"She must finish her work.",fr:"Elle doit finir son travail."},
+    {en:"Do you know this city?",fr:"Tu connais cette ville ?",alt:"Vous connaissez cette ville ?"},
+    {en:"We want to travel to France.",fr:"Nous voulons voyager en France."},
+    {en:"He doesn't know how to cook.",fr:"Il ne sait pas cuisiner."},
+    {en:"I am looking for the station.",fr:"Je cherche la gare."},
+    {en:"They are coming this evening.",fr:"Ils viennent ce soir."},
+    {en:"She sets the table.",fr:"Elle met la table."},
+    {en:"I take the train every day.",fr:"Je prends le train tous les jours."},
+    {en:"We are choosing a restaurant.",fr:"Nous choisissons un restaurant."},
+  ],
+  advanced:[
+    {en:"I haven't seen him for a long time.",fr:"Je ne l'ai pas vu depuis longtemps.",note:"Passé composé with negation and depuis."},
+    {en:"She told me she was tired.",fr:"Elle m'a dit qu'elle était fatiguée.",note:"Indirect speech shifts tense to imperfect."},
+    {en:"You must not forget your passport.",fr:"Vous ne devez pas oublier votre passeport."},
+    {en:"He knows Paris very well.",fr:"Il connaît très bien Paris."},
+    {en:"I would like a table for two.",fr:"Je voudrais une table pour deux.",note:"Conditional of vouloir = polite request."},
+    {en:"They finished their studies last year.",fr:"Ils ont fini leurs études l'année dernière."},
+    {en:"She doesn't know where he lives.",fr:"Elle ne sait pas où il habite."},
+    {en:"We have been living here for three years.",fr:"Nous habitons ici depuis trois ans.",note:"Present + depuis for ongoing states."},
+    {en:"I'm sorry, I don't have time.",fr:"Désolé, je n'ai pas le temps."},
+    {en:"Could you help me, please?",fr:"Pourriez-vous m'aider, s'il vous plaît ?",note:"Polite conditional form of pouvoir."},
+  ],
+};
+
+const tdDiffs=['beginner','intermediate','advanced'];
+let tdDiff='beginner',tdQ=null,tdAnswered=false,tdDone=0;
+let tdScores={c:0,w:0,s:0},tdHistory=[];
+
+function tdBuildDiffs(){
+  const c=document.getElementById('td-diffRow');c.innerHTML='';
+  tdDiffs.forEach(d=>{
+    const b=document.createElement('button');
+    b.className='diff-btn'+(d===tdDiff?' active':'');
+    b.textContent=d.charAt(0).toUpperCase()+d.slice(1);
+    b.onclick=()=>{tdDiff=d;tdBuildDiffs();tdNext();};
+    c.appendChild(b);
+  });
+}
+function tdNext(){
+  const pool=tdData[tdDiff];
+  const fresh=pool.filter(q=>!tdHistory.slice(-3).includes(q.en));
+  const src=fresh.length>0?fresh:pool;
+  tdQ=src[Math.floor(Math.random()*src.length)];
+  tdHistory.push(tdQ.en);if(tdHistory.length>20)tdHistory.shift();
+  tdAnswered=false;
+  document.getElementById('td-badge').textContent=tdDiff+' · translation';
+  document.getElementById('td-english').textContent=tdQ.en;
+  document.getElementById('td-hint').textContent='';
+  const inp=document.getElementById('td-answer');
+  inp.value='';inp.className='';
+  document.getElementById('td-feedback').className='feedback hidden';
+  document.getElementById('td-comparison').classList.remove('show');
+  document.getElementById('td-note').classList.remove('show');
+  document.getElementById('td-nextBtn').style.display='none';
+  document.getElementById('td-submitBtn').textContent='Check';
+  inp.focus();
+  document.getElementById('td-progress').style.width=(tdDone%pool.length)/pool.length*100+'%';
+}
+function tdCheck(){
+  if(tdAnswered){tdNext();return;}
+  const val=document.getElementById('td-answer').value;if(!val.trim())return;
+  const strip=s=>normalize(s).replace(/[?!.,;'']/g,'').replace(/\s+/g,' ').trim();
+  const ok=[tdQ.fr,...(tdQ.alt?[tdQ.alt]:[])].some(a=>strip(val)===strip(a));
+  tdAnswered=true;tdDone++;
+  const inp=document.getElementById('td-answer');
+  const fb=document.getElementById('td-feedback');
+  if(ok){tdScores.c++;tdScores.s++;inp.className='correct';fb.className='feedback correct';document.getElementById('td-fbIcon').textContent='✓';document.getElementById('td-fbText').textContent='Correct!';}
+  else{tdScores.w++;tdScores.s=0;inp.className='wrong';fb.className='feedback wrong';document.getElementById('td-fbIcon').textContent='✗';document.getElementById('td-fbText').textContent='See comparison below.';document.getElementById('td-model').textContent=tdQ.fr;document.getElementById('td-yours').textContent=val;document.getElementById('td-comparison').classList.add('show');}
+  if(tdQ.note){document.getElementById('td-note').textContent='Note: '+tdQ.note;document.getElementById('td-note').classList.add('show');}
+  document.getElementById('td-correct').textContent=tdScores.c;
+  document.getElementById('td-wrong').textContent=tdScores.w;
+  document.getElementById('td-streak').textContent=tdScores.s;
+  document.getElementById('td-nextBtn').style.display='block';
+  document.getElementById('td-submitBtn').textContent='Next →';
+}
+document.getElementById('td-answer').addEventListener('keydown',e=>{if(e.key==='Enter')tdCheck();});
+tdBuildDiffs();tdNext();
+
+/* ══════════════════════════════════════════════════════
+   GENDER TRAINER DATA
+══════════════════════════════════════════════════════ */
+const gnData = {
+  everyday: [
+    {word:"livre",gender:"le",eng:"book"},{word:"table",gender:"la",eng:"table"},
+    {word:"stylo",gender:"le",eng:"pen"},{word:"porte",gender:"la",eng:"door"},
+    {word:"chaise",gender:"la",eng:"chair"},{word:"bureau",gender:"le",eng:"desk / office"},
+    {word:"fenêtre",gender:"la",eng:"window"},{word:"téléphone",gender:"le",eng:"phone"},
+    {word:"voiture",gender:"la",eng:"car"},{word:"train",gender:"le",eng:"train"},
+    {word:"maison",gender:"la",eng:"house"},{word:"appartement",gender:"le",eng:"apartment"},
+    {word:"jardin",gender:"le",eng:"garden"},{word:"cuisine",gender:"la",eng:"kitchen"},
+    {word:"chambre",gender:"la",eng:"bedroom"},{word:"salon",gender:"le",eng:"living room"},
+    {word:"salle de bain",gender:"la",eng:"bathroom"},{word:"escalier",gender:"le",eng:"staircase"},
+    {word:"clé",gender:"la",eng:"key"},{word:"sac",gender:"le",eng:"bag"},
+    {word:"portefeuille",gender:"le",eng:"wallet"},{word:"parapluie",gender:"le",eng:"umbrella"},
+    {word:"miroir",gender:"le",eng:"mirror"},{word:"lampe",gender:"la",eng:"lamp"},
+  ],
+  food: [
+    {word:"pain",gender:"le",eng:"bread"},{word:"baguette",gender:"la",eng:"baguette"},
+    {word:"fromage",gender:"le",eng:"cheese"},{word:"viande",gender:"la",eng:"meat"},
+    {word:"poulet",gender:"le",eng:"chicken"},{word:"poisson",gender:"le",eng:"fish"},
+    {word:"pomme",gender:"la",eng:"apple"},{word:"orange",gender:"la",eng:"orange"},
+    {word:"citron",gender:"le",eng:"lemon"},{word:"fraise",gender:"la",eng:"strawberry"},
+    {word:"raisin",gender:"le",eng:"grape"},{word:"poire",gender:"la",eng:"pear"},
+    {word:"café",gender:"le",eng:"coffee"},{word:"eau",gender:"l'",eng:"water (l')"},
+    {word:"vin",gender:"le",eng:"wine"},{word:"bière",gender:"la",eng:"beer"},
+    {word:"soupe",gender:"la",eng:"soup"},{word:"salade",gender:"la",eng:"salad"},
+    {word:"gâteau",gender:"le",eng:"cake"},{word:"tarte",gender:"la",eng:"tart / pie"},
+    {word:"chocolat",gender:"le",eng:"chocolate"},{word:"sucre",gender:"le",eng:"sugar"},
+    {word:"sel",gender:"le",eng:"salt"},{word:"beurre",gender:"le",eng:"butter"},
+    {word:"lait",gender:"le",eng:"milk"},{word:"œuf",gender:"le",eng:"egg"},
+  ],
+  places: [
+    {word:"ville",gender:"la",eng:"city"},{word:"pays",gender:"le",eng:"country"},
+    {word:"rue",gender:"la",eng:"street"},{word:"avenue",gender:"l'",eng:"avenue (l')"},
+    {word:"marché",gender:"le",eng:"market"},{word:"boulangerie",gender:"la",eng:"bakery"},
+    {word:"pharmacie",gender:"la",eng:"pharmacy"},{word:"hôpital",gender:"le",eng:"hospital"},
+    {word:"école",gender:"l'",eng:"school (l')","gender":"la"},{word:"université",gender:"l'",eng:"university (l')","gender":"la"},
+    {word:"bibliothèque",gender:"la",eng:"library"},{word:"musée",gender:"le",eng:"museum"},
+    {word:"théâtre",gender:"le",eng:"theatre"},{word:"cinéma",gender:"le",eng:"cinema"},
+    {word:"restaurant",gender:"le",eng:"restaurant"},{word:"hôtel",gender:"le",eng:"hotel"},
+    {word:"aéroport",gender:"l'",eng:"airport (l')","gender":"le"},{word:"gare",gender:"la",eng:"train station"},
+    {word:"plage",gender:"la",eng:"beach"},{word:"forêt",gender:"la",eng:"forest"},
+    {word:"montagne",gender:"la",eng:"mountain"},{word:"mer",gender:"la",eng:"sea"},
+    {word:"fleuve",gender:"le",eng:"river (large)"},{word:"pont",gender:"le",eng:"bridge"},
+  ],
+  abstract: [
+    {word:"liberté",gender:"la",eng:"freedom"},{word:"bonheur",gender:"le",eng:"happiness"},
+    {word:"amour",gender:"le",eng:"love"},{word:"amitié",gender:"l'",eng:"friendship (l')","gender":"la"},
+    {word:"travail",gender:"le",eng:"work"},{word:"vie",gender:"la",eng:"life"},
+    {word:"mort",gender:"la",eng:"death"},{word:"temps",gender:"le",eng:"time / weather"},
+    {word:"argent",gender:"l'",eng:"money (l')","gender":"le"},{word:"santé",gender:"la",eng:"health"},
+    {word:"chance",gender:"la",eng:"luck"},{word:"danger",gender:"le",eng:"danger"},
+    {word:"gouvernement",gender:"le",eng:"government"},{word:"politique",gender:"la",eng:"politics"},
+    {word:"histoire",gender:"l'",eng:"history / story (l')","gender":"la"},{word:"science",gender:"la",eng:"science"},
+    {word:"art",gender:"l'",eng:"art (l')","gender":"le"},{word:"musique",gender:"la",eng:"music"},
+    {word:"sport",gender:"le",eng:"sport"},{word:"voyage",gender:"le",eng:"trip / journey"},
+    {word:"tourisme",gender:"le",eng:"tourism"},{word:"culture",gender:"la",eng:"culture"},
+  ],
+  body: [
+    {word:"tête",gender:"la",eng:"head"},{word:"visage",gender:"le",eng:"face"},
+    {word:"œil",gender:"l'",eng:"eye (l')","gender":"le"},{word:"bouche",gender:"la",eng:"mouth"},
+    {word:"nez",gender:"le",eng:"nose"},{word:"oreille",gender:"l'",eng:"ear (l')","gender":"la"},
+    {word:"cou",gender:"le",eng:"neck"},{word:"épaule",gender:"l'",eng:"shoulder (l')","gender":"la"},
+    {word:"bras",gender:"le",eng:"arm"},{word:"main",gender:"la",eng:"hand"},
+    {word:"doigt",gender:"le",eng:"finger"},{word:"jambe",gender:"la",eng:"leg"},
+    {word:"pied",gender:"le",eng:"foot"},{word:"dos",gender:"le",eng:"back"},
+    {word:"cœur",gender:"le",eng:"heart"},{word:"estomac",gender:"l'",eng:"stomach (l')","gender":"le"},
+  ],
+};
+
+const gnCats = ['everyday','food','places','abstract','body'];
+let gnCat = 'everyday', gnQ = null, gnAnswered = false, gnDone = 0;
+let gnScores = {c:0,w:0,s:0}, gnHistory = [], gnRefOpen = false;
+
+function gnBuildCats() {
+  const c = document.getElementById('gn-catRow'); c.innerHTML = '';
+  gnCats.forEach(cat => {
+    const b = document.createElement('button');
+    b.className = 'diff-btn' + (cat === gnCat ? ' active' : '');
+    b.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+    b.onclick = () => { gnCat = cat; gnBuildCats(); gnHistory = []; gnNext(); };
+    c.appendChild(b);
+  });
+}
+
+function gnNext() {
+  const pool = gnData[gnCat];
+  const recent = gnHistory.slice(-5);
+  const fresh = pool.filter(q => !recent.includes(q.word));
+  const src = fresh.length > 0 ? fresh : pool;
+  gnQ = src[Math.floor(Math.random() * src.length)];
+  gnHistory.push(gnQ.word); if (gnHistory.length > 30) gnHistory.shift();
+  gnAnswered = false;
+
+  document.getElementById('gn-badge').textContent = gnCat + ' · gender trainer';
+  document.getElementById('gn-word').textContent = gnQ.word;
+  document.getElementById('gn-hint-eng').textContent = gnQ.eng;
+  document.getElementById('gn-counter').textContent = gnDone + ' answered';
+  document.getElementById('gn-feedback').textContent = '';
+  document.getElementById('gn-feedback').className = '';
+  document.getElementById('gn-nextBtn').style.display = 'none';
+
+  const leBtn = document.getElementById('gn-le');
+  const laBtn = document.getElementById('gn-la');
+  leBtn.className = 'gn-choice-btn';
+  laBtn.className = 'gn-choice-btn';
+
+  const pool2 = gnData[gnCat];
+  document.getElementById('gn-progress').style.width = (gnDone % pool2.length) / pool2.length * 100 + '%';
+}
+
+function gnGuess(guess) {
+  if (gnAnswered) return;
+  gnAnswered = true; gnDone++;
+
+  // normalise: l' words — article stored as "le" or "la" in the data's actual gender field
+  // Some words have gender:"l'" as the display but actual gender in a second gender property
+  // Handle both cases
+  let correct = gnQ.gender;
+  // If the article is l', we need the actual gender for comparison
+  // The data has some entries with two gender fields — last one wins in JS objects
+  // So gnQ.gender is already the correct one for l' words (le or la)
+  // For display, if stored as "l'", map guess: le/la both need to check
+  const displayArticle = correct; // le, la, or l'
+  let isCorrect;
+  if (displayArticle === "l'") {
+    isCorrect = true; // l' words we accept either since it's ambiguous — show the real answer
+  } else {
+    isCorrect = guess === correct;
+  }
+
+  const leBtn = document.getElementById('gn-le');
+  const laBtn = document.getElementById('gn-la');
+  const fb = document.getElementById('gn-feedback');
+
+  if (displayArticle === "l'") {
+    // Special case: show info
+    leBtn.className = 'gn-choice-btn disabled';
+    laBtn.className = 'gn-choice-btn disabled';
+    fb.textContent = "l' — used before vowel sounds. Both le/la accepted!";
+    fb.className = 'gn-feedback-correct';
+    gnScores.c++; gnScores.s++;
+  } else if (isCorrect) {
+    document.getElementById('gn-' + guess).className = 'gn-choice-btn selected-correct';
+    document.getElementById('gn-' + (guess === 'le' ? 'la' : 'le')).className = 'gn-choice-btn disabled';
+    fb.textContent = '✓ Correct! ' + correct + ' ' + gnQ.word;
+    fb.className = 'gn-feedback-correct';
+    gnScores.c++; gnScores.s++;
+  } else {
+    document.getElementById('gn-' + guess).className = 'gn-choice-btn selected-wrong';
+    document.getElementById('gn-' + correct).className = 'gn-choice-btn reveal-correct';
+    fb.textContent = '✗ It\'s ' + correct + ' ' + gnQ.word;
+    fb.className = 'gn-feedback-wrong';
+    document.getElementById('gn-card').classList.add('shake');
+    setTimeout(() => document.getElementById('gn-card').classList.remove('shake'), 280);
+    gnScores.w++; gnScores.s = 0;
+  }
+
+  document.getElementById('gn-correct').textContent = gnScores.c;
+  document.getElementById('gn-wrong').textContent = gnScores.w;
+  document.getElementById('gn-streak').textContent = gnScores.s;
+  document.getElementById('gn-nextBtn').style.display = 'block';
+}
+
+function gnToggleRef() {
+  gnRefOpen = !gnRefOpen;
+  document.getElementById('gn-refBody').style.display = gnRefOpen ? 'block' : 'none';
+  document.getElementById('gn-refBtn').classList.toggle('open', gnRefOpen);
+}
+
+// Keyboard shortcuts for gender trainer
+document.addEventListener('keydown', e => {
+  const genderPage = document.getElementById('page-gender');
+  if (!genderPage.classList.contains('active')) return;
+  if (e.key === 'ArrowLeft')  { e.preventDefault(); gnGuess('le'); }
+  if (e.key === 'ArrowRight') { e.preventDefault(); gnGuess('la'); }
+  if (e.key === ' ' || e.key === 'Enter') {
+    e.preventDefault();
+    if (gnAnswered) gnNext();
+  }
+});
+
+gnBuildCats(); gnNext();
+
+/* ══ EXPANDED SENTENCE BUILDER CONTENT ══ */
+// Append more sentences to existing sbData
+sbData.beginner.push(
+  {english:"The weather is nice today.",answer:"Il fait beau aujourd'hui.",words:["Il","fait","beau","aujourd'hui","froid","elle","chaud","est"]},
+  {english:"I don't understand.",answer:"Je ne comprends pas.",words:["Je","ne","comprends","pas","sais","elle","comprend","il"]},
+  {english:"What time is it?",answer:"Quelle heure est-il ?",words:["Quelle","heure","est-il","est","il","quelle","temps","heure"]},
+  {english:"I am cold.",answer:"J'ai froid.",words:["J'ai","froid","chaud","faim","soif","je","suis","elle"]},
+  {english:"She is happy.",answer:"Elle est contente.",words:["Elle","est","contente","content","triste","il","heureuse","très"]},
+  {english:"We like France.",answer:"Nous aimons la France.",words:["Nous","aimons","la","France","Paris","ils","aiment","le"]},
+  {english:"He reads a lot.",answer:"Il lit beaucoup.",words:["Il","lit","beaucoup","peu","elle","regarde","trop","souvent"]},
+  {english:"I am listening to music.",answer:"J'écoute de la musique.",words:["J'écoute","de","la","musique","radio","il","écoute","du"]}
+);
+sbData.intermediate.push(
+  {english:"She doesn't want to stay.",answer:"Elle ne veut pas rester.",words:["Elle","ne","veut","pas","rester","partir","il","peut","venir"]},
+  {english:"Do you know how to swim?",answer:"Tu sais nager ?",words:["Tu","sais","nager","cuisiner","il","peut","vous","savez","elle"]},
+  {english:"I have to finish my homework.",answer:"Je dois finir mes devoirs.",words:["Je","dois","finir","mes","devoirs","travail","elle","doit","son"]},
+  {english:"They come from Paris.",answer:"Ils viennent de Paris.",words:["Ils","viennent","de","Paris","Lyon","elle","vient","du","France"]},
+  {english:"We are looking for a hotel.",answer:"Nous cherchons un hôtel.",words:["Nous","cherchons","un","hôtel","restaurant","ils","trouvent","une","gare"]},
+  {english:"She is writing a letter.",answer:"Elle écrit une lettre.",words:["Elle","écrit","une","lettre","carte","il","lit","un","email"]},
+  {english:"I put on my coat.",answer:"Je mets mon manteau.",words:["Je","mets","mon","manteau","veste","elle","met","ma","chapeau"]},
+  {english:"Do you see the difference?",answer:"Vous voyez la différence ?",words:["Vous","voyez","la","différence","problème","tu","vois","le","réponse"]}
+);
+sbData.advanced.push(
+  {english:"I need to speak to a doctor.",answer:"Je dois parler à un médecin.",words:["Je","dois","parler","à","un","médecin","professeur","elle","peut","il"]},
+  {english:"She has already finished her work.",answer:"Elle a déjà fini son travail.",words:["Elle","a","déjà","fini","son","travail","étude","il","avait","sa"]},
+  {english:"We haven't seen them for a long time.",answer:"Nous ne les avons pas vus depuis longtemps.",words:["Nous","ne","les","avons","pas","vus","depuis","longtemps","vu","ils","ont"]},
+  {english:"He told me he would come.",answer:"Il m'a dit qu'il viendrait.",words:["Il","m'a","dit","qu'il","viendrait","pourrait","elle","vendrait","je","viendrais"]},
+  {english:"You should try the local cheese.",answer:"Vous devriez essayer le fromage local.",words:["Vous","devriez","essayer","le","fromage","local","vin","ils","devraient","la"]},
+  {english:"I don't know if she is coming.",answer:"Je ne sais pas si elle vient.",words:["Je","ne","sais","pas","si","elle","vient","vient","il","peut","va"]}
+);
+/* ══ VINS & BOISSONS CONTENT ══ */
+
+// ── Sentence Builder ──
+sbData.beginner.push(
+  {english:"Do you have wine by the glass?", answer:"Vous avez du vin au verre ?", words:["Vous","avez","du","vin","au","verre","bouteille","la","en","ils"]},
+  {english:"We have red, white and orange wine.", answer:"Nous avons du vin rouge, blanc et orange.", words:["Nous","avons","du","vin","rouge","blanc","et","orange","rosé","ils","ont"]},
+  {english:"Do you prefer dry or sweet wine?", answer:"Vous préférez un vin sec ou sucré ?", words:["Vous","préférez","un","vin","sec","ou","sucré","doux","fruité","elle","préfère"]},
+  {english:"This wine is from Burgundy.", answer:"Ce vin vient de Bourgogne.", words:["Ce","vin","vient","de","Bourgogne","Bordeaux","Alsace","il","vient","la","Loire"]},
+  {english:"What cocktails do you have?", answer:"Vous avez quels cocktails ?", words:["Vous","avez","quels","cocktails","vins","bières","elle","a","quel","spiritueux"]}
+);
+sbData.intermediate.push(
+  {english:"Which wine do you recommend with fish?", answer:"Quel vin vous recommandez avec le poisson ?", words:["Quel","vin","vous","recommandez","avec","le","poisson","la","viande","fromage","il"]},
+  {english:"This white wine is quite dry and mineral.", answer:"Ce vin blanc est assez sec et minéral.", words:["Ce","vin","blanc","est","assez","sec","et","minéral","fruité","rond","il","très"]},
+  {english:"Would you like to taste before I pour?", answer:"Vous voulez goûter avant que je serve ?", words:["Vous","voulez","goûter","avant","que","je","serve","verse","il","veux","tu","elle"]},
+  {english:"This red is smooth with notes of cherry.", answer:"Ce rouge est rond avec des notes de cerise.", words:["Ce","rouge","est","rond","avec","des","notes","de","cerise","fruits","il","très","et"]},
+  {english:"We have six wines by the glass tonight.", answer:"Nous avons six vins au verre ce soir.", words:["Nous","avons","six","vins","au","verre","ce","soir","quatre","bouteille","ils","ont"]}
+);
+sbData.advanced.push(
+  {english:"This orange wine has more tannins than a white.", answer:"Ce vin orange a plus de tanins qu'un blanc.", words:["Ce","vin","orange","a","plus","de","tanins","qu'un","blanc","moins","rouge","il","que"]},
+  {english:"Would you like something fuller bodied or more elegant?", answer:"Vous cherchez quelque chose de plus corsé ou plus élégant ?", words:["Vous","cherchez","quelque","chose","de","plus","corsé","ou","plus","élégant","léger","elle","un"]},
+  {english:"This Burgundy pairs very well with the duck.", answer:"Ce Bourgogne se marie très bien avec le canard.", words:["Ce","Bourgogne","se","marie","très","bien","avec","le","canard","agneau","Bordeaux","il","la"]}
+);
+
+// ── Translation Drills ──
+tdData.beginner.push(
+  {en:"Do you have wine by the glass?", fr:"Vous avez du vin au verre ?"},
+  {en:"Red or white?", fr:"Rouge ou blanc ?"},
+  {en:"Do you prefer dry or sweet?", fr:"Vous préférez sec ou sucré ?"},
+  {en:"This wine is from the Loire Valley.", fr:"Ce vin vient de la Vallée de la Loire."},
+  {en:"What cocktails do you have?", fr:"Vous avez quels cocktails ?"},
+  {en:"A glass of the house white, please.", fr:"Un verre de blanc maison, s'il vous plaît."}
+);
+tdData.intermediate.push(
+  {en:"Which wine do you recommend with the duck?", fr:"Quel vin vous recommandez avec le canard ?"},
+  {en:"This white is dry, mineral and quite fresh.", fr:"Ce blanc est sec, minéral et assez frais."},
+  {en:"It comes from a small producer in Burgundy.", fr:"Il vient d'un petit producteur en Bourgogne."},
+  {en:"Would you like to try it before I pour the glass?", fr:"Vous voulez le goûter avant que je serve le verre ?"},
+  {en:"This red is smooth with soft tannins.", fr:"Ce rouge est rond avec des tanins souples.", note:"Rond = round/smooth, tanins souples = soft tannins — key sommelier vocab."},
+  {en:"We have it by the glass or by the bottle.", fr:"Nous l'avons au verre ou à la bouteille."},
+  {en:"The orange wine has more body than a classic white.", fr:"Le vin orange a plus de corps qu'un blanc classique."},
+  {en:"Shall I bring the wine list?", fr:"Je vous apporte la carte des vins ?"}
+);
+tdData.advanced.push(
+  {en:"This is a natural wine with very little sulfite.", fr:"C'est un vin naturel avec très peu de sulfites.", note:"Vin naturel / vin nature — increasingly common on French menus."},
+  {en:"Would you prefer something more full-bodied or more elegant?", fr:"Vous préférez quelque chose de plus corsé ou de plus élégant ?"},
+  {en:"This Burgundy pairs beautifully with the cheese selection.", fr:"Ce Bourgogne se marie très bien avec la sélection de fromages."},
+  {en:"The grapes come from a south-facing slope in Alsace.", fr:"Les raisins viennent d'un coteau exposé au sud en Alsace.", note:"Coteau = hillside / slope — useful for wine region descriptions."},
+  {en:"I'd recommend the Sancerre — it's crisp and goes well with seafood.", fr:"Je vous conseille le Sancerre — il est vif et va bien avec les fruits de mer."},
+  {en:"We've just opened a new case of the Côtes du Rhône.", fr:"Nous venons d'ouvrir une nouvelle caisse du Côtes du Rhône.", note:"Venir de + infinitive = to have just done something."}
+);
+
+// ── Gender Trainer: Vins & Boissons category ──
+gnData.vins = [
+  {word:"vin",         gender:"le",  eng:"wine"},
+  {word:"rouge",       gender:"le",  eng:"red (wine)"},
+  {word:"blanc",       gender:"le",  eng:"white (wine)"},
+  {word:"rosé",        gender:"le",  eng:"rosé"},
+  {word:"orange",      gender:"le",  eng:"orange wine"},
+  {word:"Bourgogne",   gender:"le",  eng:"Burgundy"},
+  {word:"Bordeaux",    gender:"le",  eng:"Bordeaux"},
+  {word:"Champagne",   gender:"le",  eng:"Champagne (region/wine)"},
+  {word:"Sancerre",    gender:"le",  eng:"Sancerre"},
+  {word:"Beaujolais",  gender:"le",  eng:"Beaujolais"},
+  {word:"Alsace",      gender:"l'",  eng:"Alsace (l')"},
+  {word:"carte des vins", gender:"la", eng:"wine list"},
+  {word:"verre",       gender:"le",  eng:"glass"},
+  {word:"bouteille",   gender:"la",  eng:"bottle"},
+  {word:"carafe",      gender:"la",  eng:"carafe"},
+  {word:"magnum",      gender:"le",  eng:"magnum bottle"},
+  {word:"tanin",       gender:"le",  eng:"tannin"},
+  {word:"arôme",       gender:"l'",  eng:"aroma (l')"},
+  {word:"cépage",      gender:"le",  eng:"grape variety"},
+  {word:"millésime",   gender:"le",  eng:"vintage (year)"},
+  {word:"domaine",     gender:"le",  eng:"wine estate"},
+  {word:"terroir",     gender:"le",  eng:"terroir"},
+  {word:"vendange",    gender:"la",  eng:"harvest / vintage"},
+  {word:"cave",        gender:"la",  eng:"wine cellar"},
+  {word:"bouchon",     gender:"le",  eng:"cork"},
+  {word:"décanteur",   gender:"le",  eng:"decanter"},
+  {word:"spiritueux",  gender:"le",  eng:"spirits"},
+  {word:"apéritif",    gender:"l'",  eng:"aperitif (l')"},
+  {word:"digestif",    gender:"le",  eng:"digestif"},
+  {word:"cocktail",    gender:"le",  eng:"cocktail"},
+];
+
+gnCats.push('vins');
+gnBuildCats();
+
+
+// ── Sentence Builder ──
+sbData.beginner.push(
+  {english:"A table for two, please.",answer:"Une table pour deux, s'il vous plaît.",words:["Une","table","pour","deux","s'il","vous","plaît","trois","un","merci"]},
+  {english:"Here is the menu.",answer:"Voici la carte.",words:["Voici","la","carte","menu","l'addition","le","voilà","une"]},
+  {english:"I would like a glass of wine.",answer:"Je voudrais un verre de vin.",words:["Je","voudrais","un","verre","de","vin","eau","bière","elle","veux"]},
+  {english:"The bill, please.",answer:"L'addition, s'il vous plaît.",words:["L'addition","s'il","vous","plaît","carte","merci","la","menu"]},
+  {english:"Is the kitchen still open?",answer:"Est-ce que la cuisine est encore ouverte ?",words:["Est-ce","que","la","cuisine","est","encore","ouverte","fermée","le","bar"]},
+  {english:"We are ready to order.",answer:"Nous sommes prêts à commander.",words:["Nous","sommes","prêts","à","commander","partir","ils","sont","prête","pour"]}
+);
+sbData.intermediate.push(
+  {english:"What do you recommend today?",answer:"Qu'est-ce que vous recommandez aujourd'hui ?",words:["Qu'est-ce","que","vous","recommandez","aujourd'hui","proposez","tu","recommandes","il","hier"]},
+  {english:"I am allergic to nuts.",answer:"Je suis allergique aux noix.",words:["Je","suis","allergique","aux","noix","gluten","lait","elle","est","les"]},
+  {english:"Can you bring another glass?",answer:"Vous pouvez apporter un autre verre ?",words:["Vous","pouvez","apporter","un","autre","verre","carafe","tu","peux","une"]},
+  {english:"The special today is duck confit.",answer:"Le plat du jour est le confit de canard.",words:["Le","plat","du","jour","est","le","confit","de","canard","saumon","la","poisson"]},
+  {english:"Would you like still or sparkling water?",answer:"Vous voulez de l'eau plate ou gazeuse ?",words:["Vous","voulez","de","l'eau","plate","ou","gazeuse","vin","rouge","blanc"]},
+  {english:"I'll take the steak medium rare.",answer:"Je vais prendre le steak saignant.",words:["Je","vais","prendre","le","steak","saignant","bien","cuit","à","point","elle"]}
+);
+sbData.advanced.push(
+  {english:"We have a reservation under the name Martin.",answer:"Nous avons une réservation au nom de Martin.",words:["Nous","avons","une","réservation","au","nom","de","Martin","ils","ont","la"]},
+  {english:"I'm sorry, this dish is not what I ordered.",answer:"Excusez-moi, ce plat n'est pas ce que j'ai commandé.",words:["Excusez-moi","ce","plat","n'est","pas","ce","que","j'ai","commandé","demandé","elle","a"]},
+  {english:"Could you split the bill between us?",answer:"Vous pouvez diviser l'addition entre nous ?",words:["Vous","pouvez","diviser","l'addition","entre","nous","partager","ils","peuvent","la","eux"]},
+  {english:"The last table just asked for dessert menus.",answer:"La dernière table vient de demander les cartes des desserts.",words:["La","dernière","table","vient","de","demander","les","cartes","des","desserts","menus","il","vient"]}
+);
+
+// ── Translation Drills ──
+tdData.beginner.push(
+  {en:"A table for four, please.", fr:"Une table pour quatre, s'il vous plaît."},
+  {en:"Here is the menu.", fr:"Voici la carte."},
+  {en:"I would like a beer, please.", fr:"Je voudrais une bière, s'il vous plaît."},
+  {en:"The bill, please.", fr:"L'addition, s'il vous plaît."},
+  {en:"Is service included?", fr:"Le service est inclus ?", note:"Service compris is the key phrase — worth memorising."},
+  {en:"We are ready to order.", fr:"Nous sommes prêts à commander."}
+);
+tdData.intermediate.push(
+  {en:"What do you recommend?", fr:"Qu'est-ce que vous recommandez ?"},
+  {en:"I am allergic to gluten.", fr:"Je suis allergique au gluten."},
+  {en:"Can I have still water?", fr:"Je peux avoir de l'eau plate ?", alt:"Vous avez de l'eau plate ?"},
+  {en:"The special today is salmon.", fr:"Le plat du jour est le saumon."},
+  {en:"I'll have the steak medium.", fr:"Je vais prendre le steak à point.", note:"Saignant = rare, à point = medium, bien cuit = well done."},
+  {en:"We have a reservation for eight o'clock.", fr:"Nous avons une réservation pour vingt heures.", note:"Restaurants use 24h time in France — say vingt heures, not huit heures du soir."},
+  {en:"Can you bring another bottle?", fr:"Vous pouvez apporter une autre bouteille ?"},
+  {en:"The kitchen closes at ten.", fr:"La cuisine ferme à vingt-deux heures."}
+);
+tdData.advanced.push(
+  {en:"I'm sorry, this isn't what I ordered.", fr:"Excusez-moi, ce n'est pas ce que j'ai commandé."},
+  {en:"Could you split the bill in two?", fr:"Vous pouvez diviser l'addition en deux ?"},
+  {en:"We'd like to order another round.", fr:"Nous voudrions commander une autre tournée."},
+  {en:"The gentleman at table five asked for the wine list.", fr:"Le monsieur à la table cinq a demandé la carte des vins."},
+  {en:"I've been waiting for my main course for thirty minutes.", fr:"J'attends mon plat principal depuis trente minutes.", note:"Present + depuis for ongoing waits — same rule as before."},
+  {en:"Could you tell me what's in this dish?", fr:"Vous pouvez me dire ce qu'il y a dans ce plat ?"}
+);
+
+// ── Gender Trainer ──
+gnData.restaurant = [
+  {word:"addition",gender:"l'",eng:"the bill (l')"},
+  {word:"carte",gender:"la",eng:"menu / card"},
+  {word:"menu",gender:"le",eng:"set menu"},
+  {word:"plat",gender:"le",eng:"dish / course"},
+  {word:"entrée",gender:"l'",eng:"starter (l')"},
+  {word:"dessert",gender:"le",eng:"dessert"},
+  {word:"service",gender:"le",eng:"service charge"},
+  {word:"réservation",gender:"la",eng:"reservation"},
+  {word:"table",gender:"la",eng:"table"},
+  {word:"terrasse",gender:"la",eng:"terrace"},
+  {word:"cuisine",gender:"la",eng:"kitchen / cooking"},
+  {word:"chef",gender:"le",eng:"chef"},
+  {word:"serveur",gender:"le",eng:"waiter"},
+  {word:"serveuse",gender:"la",eng:"waitress"},
+  {word:"addition",gender:"l'",eng:"bill (l')"},
+  {word:"pourboire",gender:"le",eng:"tip"},
+  {word:"verre",gender:"le",eng:"glass"},
+  {word:"bouteille",gender:"la",eng:"bottle"},
+  {word:"carafe",gender:"la",eng:"carafe / jug"},
+  {word:"assiette",gender:"l'",eng:"plate (l')"},
+  {word:"couteau",gender:"le",eng:"knife"},
+  {word:"fourchette",gender:"la",eng:"fork"},
+  {word:"cuillère",gender:"la",eng:"spoon"},
+  {word:"serviette",gender:"la",eng:"napkin"},
+  {word:"commande",gender:"la",eng:"order"},
+  {word:"plat du jour",gender:"le",eng:"daily special"},
+  {word:"apéritif",gender:"l'",eng:"aperitif (l')"},
+  {word:"digestif",gender:"le",eng:"digestif / after-dinner drink"},
+  {word:"cocktail",gender:"le",eng:"cocktail"},
+  {word:"champagne",gender:"le",eng:"champagne"},
+];
+
+// Add restaurant to category list
+gnCats.push('restaurant');
+// Rebuild the category buttons to include it
+gnBuildCats();
+</script>
+</body>
+</html>
