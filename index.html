@@ -63,6 +63,44 @@
   }
   .nav-tab:hover  { color: #ccc; }
   .nav-tab.active { color: #f2ede3; border-bottom-color: var(--red); }
+  .nav-tabs-grid { display: flex; flex: 1; }
+
+  @media (max-width: 600px) {
+    nav {
+      flex-direction: column;
+      padding: 0;
+      position: sticky; top: 0;
+    }
+    .nav-brand {
+      padding: 10px 16px;
+      border-right: none;
+      border-bottom: 1px solid #333;
+      margin-right: 0;
+      font-size: 0.95rem;
+      justify-content: center;
+    }
+    .nav-tabs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .nav-tab {
+      padding: 12px 8px;
+      margin-bottom: 0;
+      border-bottom: 3px solid transparent;
+      border-right: 1px solid #222;
+      border-top: 1px solid #222;
+      font-size: 0.62rem; letter-spacing: 0.08em;
+      justify-content: center; text-align: center;
+    }
+    .nav-tab:nth-child(2n) { border-right: none; }
+    .nav-tab.active {
+      color: #f2ede3;
+      background: transparent;
+      border-bottom-color: var(--red);
+    }
+  }
+
+
 
   /* ── PAGES ── */
   .page { display: none; }
@@ -417,10 +455,12 @@
 
 <nav>
   <div class="nav-brand">Pratique du Français</div>
-  <button class="nav-tab active" onclick="showPage('conjugations',this)">Conjugations</button>
-  <button class="nav-tab" onclick="showPage('builder',this)">Sentence Builder</button>
-  <button class="nav-tab" onclick="showPage('translation',this)">Translation Drills</button>
-  <button class="nav-tab" onclick="showPage('gender',this)">Gender Trainer</button>
+  <div class="nav-tabs-grid">
+    <button class="nav-tab active" onclick="showPage('conjugations',this)">Conjugations</button>
+    <button class="nav-tab" onclick="showPage('builder',this)">Sentence Builder</button>
+    <button class="nav-tab" onclick="showPage('translation',this)">Translation Drills</button>
+    <button class="nav-tab" onclick="showPage('gender',this)">Gender Trainer</button>
+  </div>
 </nav>
 
 <!-- ════════════════════════════════════════
